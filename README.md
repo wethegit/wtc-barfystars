@@ -5,7 +5,7 @@ This is a controller intended to be used with [wtc-controller-execute](https://g
 Javascript
 ```
 import {ExecuteControllers} from 'wtc-controller-element';
-import { BarfyStars, Particle, ACTIONS } from 'wtc-controller-barfystars';
+import { BarfyStars, Particle, ACTIONS } from 'wtc-barfystars';
 
 // Instanciate all controllers
 ExecuteControllers.instanciateAll();
