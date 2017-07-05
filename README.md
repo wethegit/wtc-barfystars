@@ -2,7 +2,7 @@
 This is a controller intended to be used with [wtc-controller-execute](https://github.com/wethegit/wtc-controller-execute) to provide a particle system fountain effect to anchors.
 
 ## usage
-Javascript
+### Javascript
 ```
 import {ExecuteControllers} from 'wtc-controller-element';
 import { BarfyStars, Particle, ACTIONS } from 'wtc-barfystars';
@@ -11,7 +11,7 @@ import { BarfyStars, Particle, ACTIONS } from 'wtc-barfystars';
 ExecuteControllers.instanciateAll();
 ```
 
-HTML
+### HTML
 ```
 <a href="#" data-controller="BarfyStars", data-config='{ "respondToResize": "false", "additionalClasses": "platform-link" }'>Text link</a>
 ```
@@ -43,7 +43,7 @@ Properties can be provided to the controller through the data-config attribute. 
 - **respondToResize** default: true
   Whether the element should respond to resize events. This should happen when the positioning of the anchor also changes in response to resize
 
-CSS
+### CSS
 ```
 .BSParticle {
   display: block;
