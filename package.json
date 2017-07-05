@@ -1,0 +1,47 @@
+{
+  "name": "wtc-barfystars",
+  "version": "0.1.0",
+  "description": "ES6 Barfy Stars controller",
+  "main": "dist/wtc-barfystars.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src/ --presets babel-preset-es2015 --out-dir dist",
+    "prepublish": "npm run build",
+    "start": "babel-node --presets babel-preset-es2015 test.js"
+  },
+  "dependencies": {
+    "babel-cli": "^6.0.0",
+    "babel-preset-es2015": "^6.13.2",
+    "babel-register": "^6.11.6",
+    "wtc-controller-element": "^1.0.13",
+    "wtc-utility-helpers": "^1.2.9",
+    "wtc-vector": "^0.1.5"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babelify": "^7.3.0",
+    "browserify": "^13.1.0",
+    "dat.gui": "^0.6.1",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-jsdoc3": "^1.0.1",
+    "gulp-notify": "^2.2.0",
+    "gulp-uglify": "^2.0.0",
+    "gulp-webserver": "^0.9.1",
+    "jaguarjs-jsdoc": "^1.0.1",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.9.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wethegit/wtc-vector.git"
+  },
+  "keywords": [
+    "wtc",
+    "barfystars"
+  ],
+  "homepage": "https://github.com/wethegit/wtc-barfystars#readme",
+  "author": "Liam Egan <liam@wethecollective.com> (http://wethecollective.com)",
+  "license": "ISC"
+}
