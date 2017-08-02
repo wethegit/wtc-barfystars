@@ -196,8 +196,18 @@ class BarfyStars extends ElementController {
       this.ammendCSS(false);
 
       if(this.action == ACTIONS.HOVER) {
+        this.element.addEventListener('touchstart', ()=> {
+          this.touching = true;
+        });
         this.element.addEventListener('mouseenter', ()=> {
+          if(this.touching) return;
           this.addParticles();
+        });
+        this.element.addEventListener('touchend', ()=> {
+          this.touching = false;
+        });
+        this.element.addEventListener('touchcancel', ()=> {
+          this.touching = false;
         });
       }
     }
