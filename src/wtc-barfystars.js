@@ -31,23 +31,27 @@ class Particle {
    * @memberOf Particle
    */
   constructor(emitter) {
-    this.emitter = emitter;
-    this.element = document.createElement('span');
-    this.element.className = this.emitter.particleClasses;
+    let iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-    let randomFactorX = Math.random();
-    this.momentum = new vector((this.momentumfactor * -1) + (randomFactorX * (this.momentumfactor * 2)), (this.momentumfactor * -1) + Math.random() * (this.momentumfactor * (-1 - this.gravityFactor)));
-    this.position = this.momentum.multiplyScalarNew(10);
-    this.position.y = 0;
-    this.position.add(new vector(0, 0));
-    this.position = new vector(0,0);
+    if(!iOS) {
+      this.emitter = emitter;
+      this.element = document.createElement('span');
+      this.element.className = this.emitter.particleClasses;
 
-    this.scale = this.scaleInitial + Math.random() * this.scaleFactor;
-    this.opacity = 1;
-    this.gravity = new vector(0, this.gravityFactor);
-    this.rotation = this.momentum.x;
+      let randomFactorX = Math.random();
+      this.momentum = new vector((this.momentumfactor * -1) + (randomFactorX * (this.momentumfactor * 2)), (this.momentumfactor * -1) + Math.random() * (this.momentumfactor * (-1 - this.gravityFactor)));
+      this.position = this.momentum.multiplyScalarNew(10);
+      this.position.y = 0;
+      this.position.add(new vector(0, 0));
+      this.position = new vector(0,0);
 
-    this.run();
+      this.scale = this.scaleInitial + Math.random() * this.scaleFactor;
+      this.opacity = 1;
+      this.gravity = new vector(0, this.gravityFactor);
+      this.rotation = this.momentum.x;
+
+      this.run();
+    }
   }
 
   /**
@@ -200,7 +204,7 @@ class BarfyStars extends ElementController {
           this.touching = true;
         });
         this.element.addEventListener('mouseenter', ()=> {
-          if(this.touching) return;
+          if(this.touching) return true;
           this.addParticles();
         });
         this.element.addEventListener('touchend', ()=> {
