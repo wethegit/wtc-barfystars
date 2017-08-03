@@ -281,7 +281,11 @@ class BarfyStars extends ElementController {
       if(this.particles.length <= 0) {
         this.running = false;
       }
-      this.element.removeChild(particle.element);
+      try {
+        this.element.removeChild(particle.element);
+      } catch (error) {
+        
+      }
     }, 0);
   }
   

@@ -58,23 +58,27 @@ var Particle = function () {
   function Particle(emitter) {
     _classCallCheck(this, Particle);
 
-    this.emitter = emitter;
-    this.element = document.createElement('span');
-    this.element.className = this.emitter.particleClasses;
+    var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-    var randomFactorX = Math.random();
-    this.momentum = new _wtcVector2.default(this.momentumfactor * -1 + randomFactorX * (this.momentumfactor * 2), this.momentumfactor * -1 + Math.random() * (this.momentumfactor * (-1 - this.gravityFactor)));
-    this.position = this.momentum.multiplyScalarNew(10);
-    this.position.y = 0;
-    this.position.add(new _wtcVector2.default(0, 0));
-    this.position = new _wtcVector2.default(0, 0);
+    if (!iOS) {
+      this.emitter = emitter;
+      this.element = document.createElement('span');
+      this.element.className = this.emitter.particleClasses;
 
-    this.scale = this.scaleInitial + Math.random() * this.scaleFactor;
-    this.opacity = 1;
-    this.gravity = new _wtcVector2.default(0, this.gravityFactor);
-    this.rotation = this.momentum.x;
+      var randomFactorX = Math.random();
+      this.momentum = new _wtcVector2.default(this.momentumfactor * -1 + randomFactorX * (this.momentumfactor * 2), this.momentumfactor * -1 + Math.random() * (this.momentumfactor * (-1 - this.gravityFactor)));
+      this.position = this.momentum.multiplyScalarNew(10);
+      this.position.y = 0;
+      this.position.add(new _wtcVector2.default(0, 0));
+      this.position = new _wtcVector2.default(0, 0);
 
-    this.run();
+      this.scale = this.scaleInitial + Math.random() * this.scaleFactor;
+      this.opacity = 1;
+      this.gravity = new _wtcVector2.default(0, this.gravityFactor);
+      this.rotation = this.momentum.x;
+
+      this.run();
+    }
   }
 
   /**
@@ -252,8 +256,18 @@ var BarfyStars = function (_ElementController) {
       _this.ammendCSS(false);
 
       if (_this.action == ACTIONS.HOVER) {
+        _this.element.addEventListener('touchstart', function () {
+          _this.touching = true;
+        });
         _this.element.addEventListener('mouseenter', function () {
+          if (_this.touching) return true;
           _this.addParticles();
+        });
+        _this.element.addEventListener('touchend', function () {
+          _this.touching = false;
+        });
+        _this.element.addEventListener('touchcancel', function () {
+          _this.touching = false;
         });
       }
     }
