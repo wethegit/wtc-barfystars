@@ -352,7 +352,9 @@ var BarfyStars = function (_ElementController) {
         if (_this3.particles.length <= 0) {
           _this3.running = false;
         }
-        _this3.element.removeChild(particle.element);
+        try {
+          _this3.element.removeChild(particle.element);
+        } catch (error) {}
       }, 0);
     }
   }, {
