@@ -323,7 +323,7 @@ var BarfyStars = function (_ElementController) {
     key: 'addParticles',
     value: function addParticles() {
       if (this.working) {
-        for (i = 0; i < this.numParticles; i++) {
+        for (var i = 0; i < this.numParticles; i++) {
           this.addParticle();
         }
         this.running = true;
@@ -344,7 +344,7 @@ var BarfyStars = function (_ElementController) {
       var _this3 = this;
 
       setTimeout(function () {
-        for (i = _this3.particles.length - 1; i >= 0; i--) {
+        for (var i = _this3.particles.length - 1; i >= 0; i--) {
           if (_this3.particles[i] === particle) {
             _this3.particles.splice(i, 1);
           }
