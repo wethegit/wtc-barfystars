@@ -258,7 +258,7 @@ class BarfyStars extends ElementController {
 
   addParticles() {
     if(this.working) {
-      for( i = 0; i < this.numParticles; i++ ) {
+      for(let i = 0; i < this.numParticles; i++ ) {
         this.addParticle();
       }
       this.running = true;
@@ -273,7 +273,7 @@ class BarfyStars extends ElementController {
   }
   removeParticle(particle) {
     setTimeout(()=> {
-      for(i = this.particles.length -1; i >= 0; i--) {
+      for(let i = this.particles.length -1; i >= 0; i--) {
         if(this.particles[i] === particle) {
           this.particles.splice(i, 1);
         }
