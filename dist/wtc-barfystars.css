@@ -1,0 +1,20 @@
+.BSParticle {
+  display: block;
+  height: 1px;
+  left: 50%;
+  position: absolute;
+  pointer-events: none;
+  top: 50%;
+  width: 1px;
+  z-index: 3;
+}
+
+.BSParticle::after {
+  content: '';
+  background-size: 100% 100%;
+  display: block;
+  height: 102px;
+  position: absolute;
+  transform: translate(-51px, -51px);
+  width: 102px;
+}
