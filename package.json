@@ -1,6 +1,6 @@
 {
   "name": "wtc-barfystars",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "ES6 Barfy Stars controller",
   "main": "dist/wtc-barfystars.js",
   "scripts": {
