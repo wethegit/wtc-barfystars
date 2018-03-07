@@ -11,10 +11,9 @@
 
 .BSParticle::after {
   content: '';
-  background-size: 100% 100%;
+  background-size: contain;
+  background-repeat: no-repeat;
   display: block;
-  height: 102px;
   position: absolute;
-  transform: translate(-51px, -51px);
-  width: 102px;
+  transform: translate(-50%, -50%);
 }
