@@ -15,9 +15,9 @@ var _wtcVector = require('wtc-vector');
 
 var _wtcVector2 = _interopRequireDefault(_wtcVector);
 
-var _wtcUtilityHelpers = require('wtc-utility-helpers');
+var _wtcMeasureFps = require('wtc-measure-fps');
 
-var _wtcUtilityHelpers2 = _interopRequireDefault(_wtcUtilityHelpers);
+var _wtcMeasureFps2 = _interopRequireDefault(_wtcMeasureFps);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -33,8 +33,7 @@ var ACTIONS = {
   CALLBACK: 2
 };
 
-var fpsMeasure = _wtcUtilityHelpers2.default.getFPSMeasure();
-window.fpsMeasure = fpsMeasure;
+var fpsMeasure = (0, _wtcMeasureFps2.default)();
 
 /**
  * The Particle class is responsible for undertaking the calculations based on properties
@@ -234,6 +233,7 @@ var BarfyStars = function (_ElementController) {
         _this.removeAt = config.removeAt;
         _this.additionalClasses = config.additionalClasses;
         _this.respondToResize = config.respondToResize != 'false';
+        _this.eventName = config.eventName;
       }
 
       _this.working = true;
@@ -255,6 +255,7 @@ var BarfyStars = function (_ElementController) {
       _this.wrapper.appendChild(_this.element);
       _this.ammendCSS(false);
 
+      // @TODO All of this needs to be cleaned up to alleviate memory leaks
       if (_this.action == ACTIONS.HOVER) {
         _this.element.addEventListener('touchstart', function () {
           _this.touching = true;
@@ -268,6 +269,10 @@ var BarfyStars = function (_ElementController) {
         });
         _this.element.addEventListener('touchcancel', function () {
           _this.touching = false;
+        });
+      } else if (_this.action == ACTIONS.CALLBACK) {
+        window.addEventListener(_this.eventName, function () {
+          _this.addParticles();
         });
       }
     }
@@ -515,6 +520,14 @@ var BarfyStars = function (_ElementController) {
     },
     get: function get() {
       return this._respondToResize !== false;
+    }
+  }, {
+    key: 'eventName',
+    set: function set(value) {
+      if (typeof value === 'string') this._eventName = value;
+    },
+    get: function get() {
+      return this._eventName || 'barf_stars';
     }
   }]);
 

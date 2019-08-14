@@ -86,9 +86,9 @@ var _wtcVector = __webpack_require__(2);
 
 var _wtcVector2 = _interopRequireDefault(_wtcVector);
 
-var _wtcUtilityHelpers = __webpack_require__(3);
+var _wtcMeasureFps = __webpack_require__(3);
 
-var _wtcUtilityHelpers2 = _interopRequireDefault(_wtcUtilityHelpers);
+var _wtcMeasureFps2 = _interopRequireDefault(_wtcMeasureFps);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -104,8 +104,7 @@ var ACTIONS = {
   CALLBACK: 2
 };
 
-var fpsMeasure = _wtcUtilityHelpers2.default.getFPSMeasure();
-window.fpsMeasure = fpsMeasure;
+var fpsMeasure = (0, _wtcMeasureFps2.default)();
 
 /**
  * The Particle class is responsible for undertaking the calculations based on properties
@@ -305,6 +304,7 @@ var BarfyStars = function (_ElementController) {
         _this.removeAt = config.removeAt;
         _this.additionalClasses = config.additionalClasses;
         _this.respondToResize = config.respondToResize != 'false';
+        _this.eventName = config.eventName;
       }
 
       _this.working = true;
@@ -326,6 +326,7 @@ var BarfyStars = function (_ElementController) {
       _this.wrapper.appendChild(_this.element);
       _this.ammendCSS(false);
 
+      // @TODO All of this needs to be cleaned up to alleviate memory leaks
       if (_this.action == ACTIONS.HOVER) {
         _this.element.addEventListener('touchstart', function () {
           _this.touching = true;
@@ -339,6 +340,10 @@ var BarfyStars = function (_ElementController) {
         });
         _this.element.addEventListener('touchcancel', function () {
           _this.touching = false;
+        });
+      } else if (_this.action == ACTIONS.CALLBACK) {
+        window.addEventListener(_this.eventName, function () {
+          _this.addParticles();
         });
       }
     }
@@ -587,6 +592,14 @@ var BarfyStars = function (_ElementController) {
     get: function get() {
       return this._respondToResize !== false;
     }
+  }, {
+    key: 'eventName',
+    set: function set(value) {
+      if (typeof value === 'string') this._eventName = value;
+    },
+    get: function get() {
+      return this._eventName || 'barf_stars';
+    }
   }]);
 
   return BarfyStars;
@@ -621,7 +634,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  *
  * @static
  * @author Marlon Marcello <marlon@wethecollective.com>
- * @version 1
+ * @version 1.1.0
  * @requirements
  * @created Nov 23, 2016
  */
@@ -710,7 +723,8 @@ var ExecuteControllers = function () {
 
           if (!debug) {
 
-            var instance = new controller(el);
+            var parameters = el.dataset;
+            var instance = new controller(el, parameters);
 
             return el;
           }
@@ -720,7 +734,8 @@ var ExecuteControllers = function () {
       }
 
       if (debug) {
-        var _instance = new controller(el);
+        var _parameters = el.dataset;
+        var _instance = new controller(el, _parameters);
         return el;
       }
     }
@@ -832,10 +847,13 @@ exports.ExecuteControllers = ExecuteControllers;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+exports["default"] = void 0;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 var conversionFactor = 180 / Math.PI;
 
@@ -846,7 +864,6 @@ var radianToDegrees = function radianToDegrees(radian) {
 var degreesToRadian = function degreesToRadian(degrees) {
   return degrees / conversionFactor;
 };
-
 /**
  * A basic 2D Vector class that provides simple algebraic functionality in the form
  * of 2D Vectors.
@@ -860,8 +877,10 @@ var degreesToRadian = function degreesToRadian(degrees) {
  * @created Dec 19, 2016
  */
 
-var Vector = function () {
 
+var Vector =
+/*#__PURE__*/
+function () {
   /**
    * The Vector Class constructor
    *
@@ -875,7 +894,6 @@ var Vector = function () {
     this.x = x;
     this.y = y;
   }
-
   /**
    * Resets the vector coordinates
    *
@@ -886,12 +904,26 @@ var Vector = function () {
 
 
   _createClass(Vector, [{
-    key: 'reset',
+    key: "reset",
     value: function reset(x, y) {
       this.x = x;
       this.y = y;
     }
+    /**
+     * Resets the vector coordinates to another vector object
+     *
+     * @public
+    * @param {Vector} v 				The vector object to use to reset the coordinates
+     */
 
+  }, {
+    key: "resetToVector",
+    value: function resetToVector(v) {
+      if (v instanceof Vector) {
+        this.x = v.x;
+        this.y = v.y;
+      }
+    }
     /**
      * Clones the vector
      *
@@ -900,11 +932,10 @@ var Vector = function () {
      */
 
   }, {
-    key: 'clone',
+    key: "clone",
     value: function clone() {
       return new Vector(this.x, this.y);
     }
-
     /**
      * Adds one vector to another.
      *
@@ -915,7 +946,7 @@ var Vector = function () {
      */
 
   }, {
-    key: 'add',
+    key: "add",
     value: function add(vector) {
       this.x += vector.x;
       this.y += vector.y;
@@ -931,12 +962,11 @@ var Vector = function () {
      */
 
   }, {
-    key: 'addNew',
+    key: "addNew",
     value: function addNew(vector) {
       var v = this.clone();
       return v.add(vector);
     }
-
     /**
      * Adds a scalar to the vector, modifying both the x and y
      *
@@ -947,7 +977,7 @@ var Vector = function () {
      */
 
   }, {
-    key: 'addScalar',
+    key: "addScalar",
     value: function addScalar(scalar) {
       return this.add(new Vector(scalar, scalar));
     }
@@ -961,12 +991,11 @@ var Vector = function () {
      */
 
   }, {
-    key: 'addScalarNew',
+    key: "addScalarNew",
     value: function addScalarNew(scalar) {
       var v = this.clone();
       return v.addScalar(scalar);
     }
-
     /**
      * Subtracts one vector from another.
      *
@@ -977,7 +1006,7 @@ var Vector = function () {
      */
 
   }, {
-    key: 'subtract',
+    key: "subtract",
     value: function subtract(vector) {
       this.x -= vector.x;
       this.y -= vector.y;
@@ -993,12 +1022,11 @@ var Vector = function () {
      */
 
   }, {
-    key: 'subtractNew',
+    key: "subtractNew",
     value: function subtractNew(vector) {
       var v = this.clone();
       return v.subtract(vector);
     }
-
     /**
      * Subtracts a scalar from the vector, modifying both the x and y
      *
@@ -1009,7 +1037,7 @@ var Vector = function () {
      */
 
   }, {
-    key: 'subtractScalar',
+    key: "subtractScalar",
     value: function subtractScalar(scalar) {
       return this.subtract(new Vector(scalar, scalar));
     }
@@ -1023,12 +1051,11 @@ var Vector = function () {
      */
 
   }, {
-    key: 'subtractScalarNew',
+    key: "subtractScalarNew",
     value: function subtractScalarNew(scalar) {
       var v = this.clone();
       return v.subtractScalar(scalar);
     }
-
     /**
      * Divides one vector by another.
      *
@@ -1039,18 +1066,20 @@ var Vector = function () {
      */
 
   }, {
-    key: 'divide',
+    key: "divide",
     value: function divide(vector) {
       if (vector.x !== 0) {
         this.x /= vector.x;
       } else {
         this.x = 0;
       }
+
       if (vector.y !== 0) {
         this.y /= vector.y;
       } else {
         this.y = 0;
       }
+
       return this;
     }
     /**
@@ -1063,12 +1092,11 @@ var Vector = function () {
      */
 
   }, {
-    key: 'divideNew',
+    key: "divideNew",
     value: function divideNew(vector) {
       var v = this.clone();
       return v.divide(vector);
     }
-
     /**
      * Divides the vector by a scalar.
      *
@@ -1079,7 +1107,7 @@ var Vector = function () {
      */
 
   }, {
-    key: 'divideScalar',
+    key: "divideScalar",
     value: function divideScalar(scalar) {
       var v = new Vector(scalar, scalar);
       return this.divide(v);
@@ -1094,12 +1122,11 @@ var Vector = function () {
      */
 
   }, {
-    key: 'divideScalarNew',
+    key: "divideScalarNew",
     value: function divideScalarNew(scalar) {
       var v = this.clone();
       return v.divideScalar(scalar);
     }
-
     /**
      * Multiplies one vector by another.
      *
@@ -1110,7 +1137,7 @@ var Vector = function () {
      */
 
   }, {
-    key: 'multiply',
+    key: "multiply",
     value: function multiply(vector) {
       this.x *= vector.x;
       this.y *= vector.y;
@@ -1126,12 +1153,11 @@ var Vector = function () {
      */
 
   }, {
-    key: 'multiplyNew',
+    key: "multiplyNew",
     value: function multiplyNew(vector) {
       var v = this.clone();
       return v.multiply(vector);
     }
-
     /**
      * Multiplies the vector by a scalar.
      *
@@ -1142,7 +1168,7 @@ var Vector = function () {
      */
 
   }, {
-    key: 'multiplyScalar',
+    key: "multiplyScalar",
     value: function multiplyScalar(scalar) {
       var v = new Vector(scalar, scalar);
       return this.multiply(v);
@@ -1157,18 +1183,17 @@ var Vector = function () {
      */
 
   }, {
-    key: 'multiplyScalarNew',
+    key: "multiplyScalarNew",
     value: function multiplyScalarNew(scalar) {
       var v = this.clone();
       return v.multiplyScalar(scalar);
     }
-
     /**
      * Alias of {@link Vector#multiplyScalar__anchor multiplyScalar}
      */
 
   }, {
-    key: 'scale',
+    key: "scale",
     value: function scale(scalar) {
       return this.multiplyScalar(scalar);
     }
@@ -1177,11 +1202,10 @@ var Vector = function () {
      */
 
   }, {
-    key: 'scaleNew',
+    key: "scaleNew",
     value: function scaleNew(scalar) {
       return this.multiplyScalarNew(scalar);
     }
-
     /**
      * Rotates a vecor by a given amount, provided in radians.
      *
@@ -1192,14 +1216,12 @@ var Vector = function () {
      */
 
   }, {
-    key: 'rotate',
+    key: "rotate",
     value: function rotate(radian) {
       var x = this.x * Math.cos(radian) - this.y * Math.sin(radian);
       var y = this.x * Math.sin(radian) + this.y * Math.cos(radian);
-
       this.x = x;
       this.y = y;
-
       return this;
     }
     /**
@@ -1212,12 +1234,11 @@ var Vector = function () {
      */
 
   }, {
-    key: 'rotateNew',
+    key: "rotateNew",
     value: function rotateNew(radian) {
       var v = this.clone();
       return v.rotate(radian);
     }
-
     /**
      * Rotates a vecor by a given amount, provided in degrees. Converts the degree
      * value to radians and runs the rotaet method.
@@ -1229,7 +1250,7 @@ var Vector = function () {
      */
 
   }, {
-    key: 'rotateDeg',
+    key: "rotateDeg",
     value: function rotateDeg(degrees) {
       return this.rotate(degreesToRadian(degrees));
     }
@@ -1243,17 +1264,16 @@ var Vector = function () {
      */
 
   }, {
-    key: 'rotateDegNew',
+    key: "rotateDegNew",
     value: function rotateDegNew(degrees) {
       return this.rotateNew(degreesToRadian(degrees));
     }
-
     /**
      * Alias of {@link Vector#rotate__anchor rotate}
      */
 
   }, {
-    key: 'rotateBy',
+    key: "rotateBy",
     value: function rotateBy(radian) {
       return this.rotate(radian);
     }
@@ -1262,17 +1282,16 @@ var Vector = function () {
      */
 
   }, {
-    key: 'rotateByNew',
+    key: "rotateByNew",
     value: function rotateByNew(radian) {
       return this.rotateNew(radian);
     }
-
     /**
      * Alias of {@link Vector#rotateDeg__anchor rotateDeg}
      */
 
   }, {
-    key: 'rotateDegBy',
+    key: "rotateDegBy",
     value: function rotateDegBy(degrees) {
       return this.rotateDeg(degrees);
     }
@@ -1281,11 +1300,10 @@ var Vector = function () {
      */
 
   }, {
-    key: 'rotateDegByNew',
+    key: "rotateDegByNew",
     value: function rotateDegByNew(radian) {
       return tjos.rotateDegNew(radian);
     }
-
     /**
      * Rotates a vector to a specific angle
      *
@@ -1296,12 +1314,12 @@ var Vector = function () {
      */
 
   }, {
-    key: 'rotateTo',
+    key: "rotateTo",
     value: function rotateTo(radian) {
       return this.rotate(radian - this.angle);
     }
   }, {
-    key: 'rotateToNew',
+    key: "rotateToNew",
 
     /**
      * Clones the vector and rotates it to the supplied radian value
@@ -1316,8 +1334,7 @@ var Vector = function () {
       return v.rotateTo(radian);
     }
   }, {
-    key: 'rotateToDeg',
-
+    key: "rotateToDeg",
 
     /**
      * Rotates a vecor to a given amount, provided in degrees. Converts the degree
@@ -1341,11 +1358,10 @@ var Vector = function () {
      */
 
   }, {
-    key: 'rotateToDegNew',
+    key: "rotateToDegNew",
     value: function rotateToDegNew(degrees) {
       return this.rotateToNew(degreesToRadian(degrees));
     }
-
     /**
      * Normalises the vector down to a length of 1 unit
      *
@@ -1355,7 +1371,7 @@ var Vector = function () {
      */
 
   }, {
-    key: 'normalise',
+    key: "normalise",
     value: function normalise() {
       return this.divideScalar(this.length);
     }
@@ -1368,11 +1384,10 @@ var Vector = function () {
      */
 
   }, {
-    key: 'normaliseNew',
+    key: "normaliseNew",
     value: function normaliseNew() {
       return this.divideScalarNew(this.length);
     }
-
     /**
      * Calculates the distance between this and the supplied vector
      *
@@ -1381,11 +1396,10 @@ var Vector = function () {
      */
 
   }, {
-    key: 'distance',
+    key: "distance",
     value: function distance(vector) {
       return this.subtractNew(vector).length;
     }
-
     /**
      * Calculates the distance on the X axis between this and the supplied vector
      *
@@ -1394,11 +1408,10 @@ var Vector = function () {
      */
 
   }, {
-    key: 'distanceX',
+    key: "distanceX",
     value: function distanceX(vector) {
       return this.x - vector.x;
     }
-
     /**
      * Calculated the distance on the Y axis between this and the supplied vector
      *
@@ -1407,11 +1420,10 @@ var Vector = function () {
      */
 
   }, {
-    key: 'distanceY',
+    key: "distanceY",
     value: function distanceY(vector) {
       return this.y - vector.y;
     }
-
     /**
      * Calculates the dot product between this and a supplied vector
      *
@@ -1426,11 +1438,10 @@ var Vector = function () {
      */
 
   }, {
-    key: 'dot',
+    key: "dot",
     value: function dot(vector) {
       return this.x * vector.x + this.y * vector.y;
     }
-
     /**
      * Calculates the cross product between this and the supplied vector.
      *
@@ -1446,11 +1457,10 @@ var Vector = function () {
      */
 
   }, {
-    key: 'cross',
+    key: "cross",
     value: function cross(vector) {
       return this.x * vector.x - this.y * vector.y;
     }
-
     /**
      * Getters and setters
      */
@@ -1463,7 +1473,7 @@ var Vector = function () {
      */
 
   }, {
-    key: 'x',
+    key: "x",
     set: function set(x) {
       if (typeof x == 'number') {
         this._x = x;
@@ -1474,7 +1484,6 @@ var Vector = function () {
     get: function get() {
       return this._x || 0;
     }
-
     /**
     * (getter/setter) The y value of the vector.
     *
@@ -1483,7 +1492,7 @@ var Vector = function () {
     */
 
   }, {
-    key: 'y',
+    key: "y",
     set: function set(y) {
       if (typeof y == 'number') {
         this._y = y;
@@ -1494,7 +1503,6 @@ var Vector = function () {
     get: function get() {
       return this._y || 0;
     }
-
     /**
     * (getter/setter) The length of the vector presented as a square. If you're using
     * length for comparison, this is quicker.
@@ -1504,9 +1512,10 @@ var Vector = function () {
     */
 
   }, {
-    key: 'lengthSquared',
+    key: "lengthSquared",
     set: function set(length) {
       var factor;
+
       if (typeof length == 'number') {
         factor = length / this.lengthSquared;
         this.multiplyScalar(factor);
@@ -1517,7 +1526,6 @@ var Vector = function () {
     get: function get() {
       return this.x * this.x + this.y * this.y;
     }
-
     /**
     * (getter/setter) The length of the vector
     *
@@ -1526,9 +1534,10 @@ var Vector = function () {
     */
 
   }, {
-    key: 'length',
+    key: "length",
     set: function set(length) {
       var factor;
+
       if (typeof length == 'number') {
         factor = length / this.length;
         this.multiplyScalar(factor);
@@ -1539,7 +1548,6 @@ var Vector = function () {
     get: function get() {
       return Math.sqrt(this.lengthSquared);
     }
-
     /**
     * (getter/setter) The angle of the vector, in radians
     *
@@ -1548,7 +1556,7 @@ var Vector = function () {
     */
 
   }, {
-    key: 'angle',
+    key: "angle",
     set: function set(radian) {
       if (typeof radian == 'number') {
         this.rotateTo(radian);
@@ -1559,7 +1567,6 @@ var Vector = function () {
     get: function get() {
       return Math.atan2(this.y, this.x);
     }
-
     /**
     * (getter/setter) The angle of the vector, in radians
     *
@@ -1568,7 +1575,7 @@ var Vector = function () {
     */
 
   }, {
-    key: 'angleInDegrees',
+    key: "angleInDegrees",
     set: function set(degrees) {
       if (typeof degrees == 'number') {
         this.rotateToDeg(degrees);
@@ -1579,7 +1586,6 @@ var Vector = function () {
     get: function get() {
       return radianToDegrees(Math.atan2(this.y, this.x));
     }
-
     /**
      * (getter/setter) Vector width.
       * Alias of {@link Vector#x x}
@@ -1588,14 +1594,13 @@ var Vector = function () {
      */
 
   }, {
-    key: 'width',
+    key: "width",
     set: function set(w) {
       this.x = w;
     },
     get: function get() {
       return this.x;
     }
-
     /**
      * (getter/setter) Vector height.
       * Alias of {@link Vector#x x}
@@ -1604,14 +1609,13 @@ var Vector = function () {
      */
 
   }, {
-    key: 'height',
+    key: "height",
     set: function set(h) {
       this.y = h;
     },
     get: function get() {
       return this.y;
     }
-
     /**
      * (getter/setter) Vector area.
      * @readonly
@@ -1620,16 +1624,34 @@ var Vector = function () {
      */
 
   }, {
-    key: 'area',
+    key: "area",
     get: function get() {
       return this.x * this.y;
+    }
+    /**
+     * (getter/setter) Vector slope.
+     *
+     * @type {number}
+     */
+
+  }, {
+    key: "slope",
+    set: function set(value) {
+      if (!isNaN(value)) {
+        var angle = Math.atan(value);
+        this.angle = angle;
+      }
+    },
+    get: function get() {
+      return this.y / this.x;
     }
   }]);
 
   return Vector;
 }();
 
-exports.default = Vector;
+var _default = Vector;
+exports["default"] = _default;
 
 /***/ }),
 /* 3 */
@@ -1641,455 +1663,13 @@ exports.default = Vector;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+exports["default"] = void 0;
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var utilities = {};
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-/**
- * floatRandomBetween
- * Generate a random float number max and min.
- * @min {number} Minimum value.
- * @max {number} Maximum value.
- * return {number} Random integer.
- */
-utilities.floatRandomBetween = function (min, max) {
-  return Math.random() * (max - min + 1) + min;
-};
-
-/**
- * randomBetween
- * Generate a random integer number max and min.
- * @min {number} Minimum value.
- * @max {number} Maximum value.
- * return {number} Random integer.
- */
-utilities.randomBetween = function (min, max) {
-  return Math.floor(utilities.floatRandomBetween(min, max));
-};
-
-/**
- * lerp
- * Linearly interpolate between two values by a unit interval
- * @param {number} x The lower value
- * @param {number} y The upper value
- * @param {number} amount the amount to interpolate. The expected value is a unit interval (a float between 0 and 1), but this *will* work with higher and lower values as well.
- * @return {number} The interpolated value
- */
-utilities.lerp = function (x, y, amount) {
-  return (1 - amount) * x + amount * y;
-};
-
-/**
- * getStyle
- * Get the current style value from an element.
- * @el {DOMNode} Target element.
- * @prop {string} CSS property name.
- * @stripUnit {boolean} Remove units.
- * return {string} Current CSS value WITH unit.
- */
-utilities.getStyle = function (el, prop, stripUnit) {
-  var strValue = "";
-
-  if (window.getComputedStyle) {
-    strValue = getComputedStyle(el).getPropertyValue(prop);
-  }
-  //IE
-  else if (el.currentStyle) {
-      try {
-        strValue = el.currentStyle[prop];
-      } catch (e) {}
-    }
-
-  if (stripUnit) {
-    strValue = parseInt(strValue);
-  }
-
-  return strValue;
-};
-
-/**
- * Log
- * Simple log function to show different colors on the console.
- * @status {string} Status type.
- * @msg {string} Message to show.
- */
-utilities.log = function (status, msg) {
-  var bgc, color;
-
-  switch (status) {
-    case "success":
-      color = "Green";
-      bgc = "LimeGreen";
-      break;
-    case "info":
-      color = "DodgerBlue";
-      bgc = "Turquoise";
-      break;
-    case "error":
-      color = "Black";
-      bgc = "Red";
-      break;
-    case "warning":
-      color = "Tomato";
-      bgc = "Gold";
-      break;
-    default:
-      color = "black";
-      bgc = "White";
-  }
-
-  if ((typeof msg === "undefined" ? "undefined" : _typeof(msg)) === "object") {
-    console.log(msg);
-  } else {
-    console.log("%c" + msg, "color:" + color + ";font-weight:bold; background-color: " + bgc + ";");
-  }
-};
-
-/**
- * once
- * Fires an event only once and executes the callback.
- * @node {DOMElement} Dom element to attach event.
- * @type {String} Type of event.
- * @callback {function} Callback.
- */
-utilities.once = function (node, type, callback) {
-  node.addEventListener(type, function (e) {
-    e.target.removeEventListener(e.type, arguments.callee);
-    return callback(e);
-  });
-};
-
-/**
- * shuffleArray
- * Shuffle an array.
- * @array Arrray to be shuffled.
- * return {array} Shuffled array.
- */
-utilities.shuffleArray = function (array) {
-  var currentIndex = array.length,
-      temporaryValue,
-      randomIndex;
-
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
-
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-
-    // And swap it with the current element.
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
-
-  return array;
-};
-
-/**
- * fireCustomEvent
- * Fire a custom event.
- * @name {string} Name of the event.
- * @data {object} Object to be passed to the event.
- */
-utilities.fireCustomEvent = function (name, data, bubbles, cancelable) {
-  var ev;
-  var params = {
-    bubbles: bubbles || true,
-    cancelable: cancelable || true,
-    detail: data || null
-  };
-
-  if (typeof window.CustomEvent === "function") {
-    ev = new CustomEvent(name, params);
-  } else {
-    ev = document.createEvent('CustomEvent');
-    ev.initCustomEvent(name, params.bubbles, params.cancelable, params.detail);
-  }
-
-  window.dispatchEvent(ev);
-};
-
-/**
- * forEachNode
- * Loop through and array of DOM elements.
- * @array {DOM Node List} List of elements.
- * @callback {function} Callback.
- * @scope *optional {function} Scope to pass to callback.
- */
-utilities.forEachNode = function (array, callback, scope) {
-  for (var i = 0; i < array.length; i++) {
-    callback.call(scope, i, array[i]); // passes back stuff we need
-  }
-};
-
-/**
- * getElementPosition
- * Get the position of the element relative to document.
- * @element {DOM Node} Element.
- * returns Object with element coordinates.
- */
-utilities.getElementPosition = function (element) {
-  var positionToViewport = element.getBoundingClientRect();
-
-  var scrollTop = window.pageYOffset;
-  var scrollLeft = window.pageXOffset;
-
-  var clientTop = document.body.clientTop || 0;
-  var clientLeft = document.body.clientLeft || 0;
-
-  var top = positionToViewport.top + scrollTop - clientTop;
-  var left = positionToViewport.left + scrollLeft - clientLeft;
-
-  return {
-    top: Math.round(top),
-    left: Math.round(left)
-  };
-};
-
-/**
- * getViewportDimensions
- * Get the browser window size.
- * retuns Object with dimensions.
- */
-utilities.getViewportDimensions = function () {
-  return {
-    width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
-    height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
-  };
-};
-
-/**
- * classExtend
- * Extends a parent class.
- * @child {function} Child class.
- * @parent {function} Parent class.
- * returns updated Child class;
- */
-utilities.classExtend = function (child, parent) {
-  var hasProp = {}.hasOwnProperty;
-
-  for (var key in parent) {
-    if (hasProp.call(parent, key)) child[key] = parent[key];
-  }
-
-  function ctor() {
-    this.constructor = child;
-  }
-
-  ctor.prototype = parent.prototype;
-  child.prototype = new ctor();
-  child.__super__ = parent.prototype;
-
-  return child;
-};
-
-/**
- * HasClass
- * Checks for class on element.
- * @cl {string} Names. You can split the names with a space
- * @e {DOM Element} Element
- */
-utilities.hasClass = function (cl, e) {
-
-  var c, classes, i, j, len, len1;
-  classes = cl.split(' ');
-
-  if (e.classList) {
-    for (i = 0, len = classes.length; i < len; i++) {
-      c = classes[i];
-      if (e.classList.contains(c) === true) {
-        return true;
-      }
-    }
-  } else {
-    for (j = 0, len1 = classes.length; j < len1; j++) {
-      c = classes[j];
-      if (new RegExp('(^| )' + c + '( |$)', 'gi').test(e.c)) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-};
-
-/**
- * RemoveClass
- * Remove class from element.
- * @c {string} name of the class
- * @e {DOM Element} Element
- */
-utilities.removeClass = function (c, e) {
-
-  var classes, i, j, len, len1;
-  classes = c.split(' ');
-  if (e.classList) {
-    for (i = 0, len = classes.length; i < len; i++) {
-      c = classes[i];
-      e.classList.remove(c);
-    }
-  } else {
-    for (j = 0, len1 = classes.length; j < len1; j++) {
-      c = classes[j];
-      e.className = e.className.replace(new RegExp('(^|\\b)' + c.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
-    }
-  }
-};
-
-/**
- * AddClass
- * Add class to element.
- * @c {string} Name of the class
- * @e {DOM Element} Element
- */
-utilities.addClass = function (c, e) {
-
-  var classes, i, j, len, len1;
-  classes = c.split(' ');
-
-  if (e.classList) {
-    for (i = 0, len = classes.length; i < len; i++) {
-      c = classes[i];
-      e.classList.add(c);
-    }
-  } else {
-    for (j = 0, len1 = classes.length; j < len1; j++) {
-      c = classes[j];
-      e.className += ' ' + c;
-    }
-  }
-};
-
-/**
- * GetSiblings
- * Get siblings from element
- * @e {DOM Element} Element
- * @return Array of DOM Elements
- */
-utilities.getSiblings = function (e) {
-
-  return Array.prototype.filter.call(e.parentNode.children, function (child) {
-    return child !== e;
-  });
-};
-
-/**
- * Function to normalize the selctor 'matchesSelector' across browsers
- */
-utilities.matches = function () {
-
-  var doc, matches;
-  doc = document.documentElement;
-  matches = doc.matchesSelector || doc.webkitMatchesSelector || doc.mozMatchesSelector || doc.oMatchesSelector || doc.msMatchesSelector;
-
-  return matches;
-};
-
-/**
- * Extend
- * Similar to jquery.extend, it appends the properties from 'options' to default and overwrite the ones that already exist in 'defaults'
- * @defaults {Object} Default values
- * @options {Object} New values
- */
-utilities.extend = function (defaults, options) {
-
-  var extended = {},
-      key = null;
-
-  for (key in defaults) {
-    if (defaults.hasOwnProperty(key)) extended[key] = defaults[key];
-  }
-
-  for (key in options) {
-    if (options.hasOwnProperty(key)) extended[key] = options[key];
-  }
-
-  return extended;
-};
-
-/**
- * Extends a base object with a series of other objects.
- *
- * @example
- * objA = {a: '1', b: '2', c: '3'};
- * objB = {d: {a: 'x', b: 'y', c: 'z'}};
- * objC = {b: 'foo'};
-
- * objD = utilities.deepExtend({}, objA, objB, objC);
- * // Outputs:
- * // [object Object] {
- * // a: "1",
- * // b: "foo",
- * // c: "3",
- * // d: [object Object] {
- * //   a: "x",
- * //   b: "y",
- * //   c: "z"
- * // }
-}
- *
- * @static
- * @param  {...Object}   object      The objects to extend. The first object in the list will be the default.
- * @return {Object}                  The extended object in full.
- */
-utilities.deepExtend = function () {
-
-  if (Object.assign) {
-    return Object.assign.apply(Object, arguments);
-  }
-
-  // This is here for older browsers
-  var out = arguments[0] || {};
-  var i = 0;
-  var key = null;
-
-  while (i++ < arguments.length) {
-    var obj = arguments[i];
-    if (obj && (typeof obj === "undefined" ? "undefined" : _typeof(obj)) == 'object') {
-      for (key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          if (_typeof(obj[key]) == 'object' && obj[key] != null) {
-            out[key] = utilities.deepExtend(out[key], obj[key]);
-          } else {
-            out[key] = obj[key];
-          }
-        }
-      }
-    }
-  }
-
-  return out;
-};
-
-/**
- * Returns the CSS selector for a provided element
- *
- * @static
- * @param  {DOMElement}   el         The DOM node to find a selector for
- * @return {String}                  The CSS selector the describes exactly where to find the element
- */
-utilities.getSelectorForElement = function (el) {
-  var particles = [];
-  while (el.parentNode) {
-    if (el.id) {
-      particles.unshift('#' + el.id);
-      break;
-    } else {
-      if (el == el.ownerDocument.documentElement) particles.unshift(el.tagName);else {
-        for (var c = 1, e = el; e.previousElementSibling; e = e.previousElementSibling, c++) {}
-        particles.unshift(el.tagName + ":nth-child(" + c + ")");
-      }
-      el = el.parentNode;
-    }
-  }
-  return particles.join(" > ");
-};
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
 /**
  * A singleton class that provides Framerate information for a website. When running, this will produce a 
@@ -2119,8 +1699,9 @@ utilities.getSelectorForElement = function (el) {
  * @private
  * @class MeasureFPS
  */
-
-var MeasureFPS = function () {
+var MeasureFPS =
+/*#__PURE__*/
+function () {
   function MeasureFPS() {
     _classCallCheck(this, MeasureFPS);
 
@@ -2131,18 +1712,14 @@ var MeasureFPS = function () {
     key: "start",
     value: function start() {
       if (this.running === true) return;
-
       this.elapsedTime = 0;
       this.lastTime = 0;
-
       this.current = 0;
       this.low = 60;
       this.averageOverall = 60;
       this.average60 = 60;
       this.ticks = 0;
-
       this.running = true;
-
       requestAnimationFrame(this.run.bind(this));
     }
   }, {
@@ -2153,19 +1730,23 @@ var MeasureFPS = function () {
   }, {
     key: "run",
     value: function run(now) {
-      var tick60 = void 0;
+      var tick60;
       this.elapsedTime = (now - (this.lastTime || now)) / 1000;
       this.lastTime = now;
       this.ticks += 1;
       this.current = 1 / this.elapsedTime;
+
       if (this.current < this.low) {
         this.low = this.current;
       }
+
       if (!isNaN(parseInt(this.current))) {
         this.averageOverall = (this.ticks * this.averageOverall + this.current) / (this.ticks + 1);
+
         if (this.ticks % 60 === 0) {
           this.average60 = 60;
         }
+
         tick60 = this.ticks % 60 + 1;
         this.average60 = (tick60 * this.average60 + this.current) / (tick60 + 1);
       }
@@ -2181,29 +1762,13 @@ var MeasureFPS = function () {
 
 var measureFPSInstance = null;
 
-utilities.getFPSMeasure = function () {
+getFPSMeasure = function getFPSMeasure() {
   if (measureFPSInstance === null) measureFPSInstance = new MeasureFPS();
   return measureFPSInstance;
 };
 
-// Fix widows replaces the last space in a sentence with a non-breaking space
-// This function is a little dangerous at the moment so we should revisit it at some point in the future
-utilities.fixWidows = function (els) {
-  _els = els;
-  if (els instanceof Node) {
-    _els = [els];
-  }
-  if (_els && _els.length) {
-    for (var i = 0; i < _els.length; i++) {
-      var el = _els[i];
-      if (el instanceof Node) {
-        el.innerHTML = el.innerHTML.replace(/\s(?=[^\s]*$)/g, "&nbsp;");
-      }
-    }
-  }
-};
-
-exports.default = utilities;
+var _default = getFPSMeasure;
+exports["default"] = _default;
 
 /***/ })
 /******/ ]);
