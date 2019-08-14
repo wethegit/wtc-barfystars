@@ -178,6 +178,7 @@ class BarfyStars extends ElementController {
         this.removeAt = config.removeAt;
         this.additionalClasses = config.additionalClasses;
         this.respondToResize = config.respondToResize != 'false';
+        this.eventName = config.eventName;
       }
 
       this.working = true;
@@ -199,6 +200,7 @@ class BarfyStars extends ElementController {
       this.wrapper.appendChild(this.element);
       this.ammendCSS(false);
 
+      // @TODO All of this needs to be cleaned up to alleviate memory leaks
       if(this.action == ACTIONS.HOVER) {
         this.element.addEventListener('touchstart', ()=> {
           this.touching = true;
@@ -212,6 +214,10 @@ class BarfyStars extends ElementController {
         });
         this.element.addEventListener('touchcancel', ()=> {
           this.touching = false;
+        });
+      } else if(this.action == ACTIONS.CALLBACK) {
+        window.addEventListener(this.eventName, () => {
+          this.addParticles();
         });
       }
     }
@@ -428,6 +434,13 @@ class BarfyStars extends ElementController {
   }
   get respondToResize() {
     return this._respondToResize !== false;
+  }
+  
+  set eventName(value) {
+    if(typeof(value) === 'string') this._eventName = value;
+  }
+  get eventName() {
+    return this._eventName || 'barf_stars';
   }
 }
 

@@ -42,6 +42,8 @@ Properties can be provided to the controller through the data-config attribute. 
   Additional classes to be provided to the containing element.
 - **respondToResize** default: true
   Whether the element should respond to resize events. This should happen when the positioning of the anchor also changes in response to resize
+- **eventName** default: 'barf_stars'
+  This indicates the event to custom listen to on the window that causes the stars to barf if the controller is set to `action:callback`
 
 ### CSS
 ```
