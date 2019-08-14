@@ -1,6 +1,6 @@
 import {default as ElementController, ExecuteControllers}  from 'wtc-controller-element';
 import vector from 'wtc-vector';
-import helpers from 'wtc-utility-helpers';
+import getFPSMeasure from 'wtc-measure-fps';
 
 const ACTIONS = {
   HOVER: 0,
@@ -8,8 +8,7 @@ const ACTIONS = {
   CALLBACK: 2
 };
 
-let fpsMeasure = helpers.getFPSMeasure();
-window.fpsMeasure = fpsMeasure;
+let fpsMeasure = getFPSMeasure();
 
 
 /**
