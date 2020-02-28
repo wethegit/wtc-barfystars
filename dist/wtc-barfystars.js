@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -7,15 +7,15 @@ exports.ACTIONS = exports.Particle = exports.BarfyStars = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _wtcControllerElement = require('wtc-controller-element');
+var _wtcControllerElement = require("wtc-controller-element");
 
 var _wtcControllerElement2 = _interopRequireDefault(_wtcControllerElement);
 
-var _wtcVector = require('wtc-vector');
+var _wtcVector = require("wtc-vector");
 
 var _wtcVector2 = _interopRequireDefault(_wtcVector);
 
-var _wtcMeasureFps = require('wtc-measure-fps');
+var _wtcMeasureFps = require("wtc-measure-fps");
 
 var _wtcMeasureFps2 = _interopRequireDefault(_wtcMeasureFps);
 
@@ -38,7 +38,7 @@ var fpsMeasure = (0, _wtcMeasureFps2.default)();
 /**
  * The Particle class is responsible for undertaking the calculations based on properties
  * provided by the Simulation class.
- * 
+ *
  * @class Particle
  * @author Liam Egan <liam@wethecollective.com>
  * @version 0.1.0
@@ -46,10 +46,9 @@ var fpsMeasure = (0, _wtcMeasureFps2.default)();
  */
 
 var Particle = function () {
-
   /**
    * Creates an instance of Particle.
-   * 
+   *
    * @constructor
    * @param {BarfyStars} emitter         The emitter class that provides the properties.
    * @memberOf Particle
@@ -61,7 +60,7 @@ var Particle = function () {
 
     if (!iOS) {
       this.emitter = emitter;
-      this.element = document.createElement('span');
+      this.element = document.createElement("span");
       this.element.className = this.emitter.particleClasses;
 
       var randomFactorX = Math.random();
@@ -82,13 +81,13 @@ var Particle = function () {
 
   /**
    * Runs the simulation for the particle.
-   *  
+   *
    * @memberOf Particle
    */
 
 
   _createClass(Particle, [{
-    key: 'run',
+    key: "run",
     value: function run() {
       var pos = this.position.clone();
       this.momentum.scale(this.friction).add(this.gravity);
@@ -98,7 +97,7 @@ var Particle = function () {
       this.opacity *= this.friction + 0.01;
       this.position = pos;
 
-      this.element.style.transform = 'translate(' + this.position.x + 'px, ' + this.position.y + 'px) scale(' + this.scale + ') rotate(' + this.rotation + 'deg)';
+      this.element.style.transform = "translate(" + this.position.x + "px, " + this.position.y + "px) scale(" + this.scale + ") rotate(" + this.rotation + "deg)";
       this.element.style.opacity = this.opacity;
 
       if (this.scale < this.removeAt || fpsMeasure.average60 < 5) {
@@ -113,13 +112,13 @@ var Particle = function () {
     /**
      * (getter/setter) The momentum factor for the particle.
      * If not provided, tries to find the value on the emitter.
-     * 
+     *
      * @memberOf Particle
      * @default 5.0
      */
 
   }, {
-    key: 'momentumfactor',
+    key: "momentumfactor",
     set: function set(value) {
       if (!isNaN(value)) {
         this._momentumfactor = value;
@@ -131,13 +130,13 @@ var Particle = function () {
 
     /**
      * (getter/setter) The friction of the particle.
-     * 
+     *
      * @memberOf Particle
      * @default 0.999
      */
 
   }, {
-    key: 'friction',
+    key: "friction",
     set: function set(value) {
       if (!isNaN(value)) {
         this._friction = value;
@@ -150,14 +149,14 @@ var Particle = function () {
     /**
      * (getter) The scaleInitial property is the initial scale of the particle.
      * This property is derived from the emitter.
-     * 
+     *
      * @readonly
      * @memberOf Particle
      * @default 0.5
      */
 
   }, {
-    key: 'scaleInitial',
+    key: "scaleInitial",
     get: function get() {
       return this.emitter.scaleInitial || 0.5;
     }
@@ -165,14 +164,14 @@ var Particle = function () {
     /**
      * (getter) scaleFactor is the amount of scaling that happens on the particle initially.
      * This property is derived from the emitter.
-     * 
+     *
      * @readonly
      * @memberOf Particle
      * @default 0.8
      */
 
   }, {
-    key: 'scaleFactor',
+    key: "scaleFactor",
     get: function get() {
       return this.emitter.scaleFactor || 0.8;
     }
@@ -180,14 +179,14 @@ var Particle = function () {
     /**
      * (getter) removeAt determines the point, in scale, at which the particle is removed.
      * This property is derived from the emitter.
-     * 
+     *
      * @readonly
      * @memberOf Particle
      * @default 0.05
      */
 
   }, {
-    key: 'removeAt',
+    key: "removeAt",
     get: function get() {
       return this.emitter.removeAt || 0.05;
     }
@@ -195,14 +194,14 @@ var Particle = function () {
     /**
      * (getter) the gravity determines the speed at which the particle falls.
      * This property is derived from the emitter.
-     * 
+     *
      * @readonly
      * @memberOf Particle
      * @default 0.05
      */
 
   }, {
-    key: 'gravityFactor',
+    key: "gravityFactor",
     get: function get() {
       return this.emitter.gravity || 0.4;
     }
@@ -232,7 +231,7 @@ var BarfyStars = function (_ElementController) {
         _this.scaleFactor = config.scaleFactor;
         _this.removeAt = config.removeAt;
         _this.additionalClasses = config.additionalClasses;
-        _this.respondToResize = config.respondToResize != 'false';
+        _this.respondToResize = config.respondToResize != "false";
         _this.eventName = config.eventName;
       }
 
@@ -243,7 +242,7 @@ var BarfyStars = function (_ElementController) {
     }
 
     if (_this.respondToResize) {
-      window.addEventListener('resize', function () {
+      window.addEventListener("resize", function () {
         clearTimeout(_this.cssTimeout);
         _this.ammendCSS();
       });
@@ -257,17 +256,17 @@ var BarfyStars = function (_ElementController) {
 
       // @TODO All of this needs to be cleaned up to alleviate memory leaks
       if (_this.action == ACTIONS.HOVER) {
-        _this.element.addEventListener('touchstart', function () {
+        _this.element.addEventListener("touchstart", function () {
           _this.touching = true;
         });
-        _this.element.addEventListener('mouseenter', function () {
+        _this.element.addEventListener("mouseenter", function () {
           if (_this.touching) return true;
           _this.addParticles();
         });
-        _this.element.addEventListener('touchend', function () {
+        _this.element.addEventListener("touchend", function () {
           _this.touching = false;
         });
-        _this.element.addEventListener('touchcancel', function () {
+        _this.element.addEventListener("touchcancel", function () {
           _this.touching = false;
         });
       } else if (_this.action == ACTIONS.CALLBACK) {
@@ -280,7 +279,7 @@ var BarfyStars = function (_ElementController) {
   }
 
   _createClass(BarfyStars, [{
-    key: 'ammendCSS',
+    key: "ammendCSS",
     value: function ammendCSS() {
       var _this2 = this;
 
@@ -289,8 +288,8 @@ var BarfyStars = function (_ElementController) {
       var w = this.wrapper;
       var e = this.element;
 
-      w.style.cssText = '';
-      e.style.cssText = '';
+      w.style.cssText = "";
+      e.style.cssText = "";
 
       this.cssTimeout = setTimeout(function () {
         w.style.display = _this2.originalStyle.display;
@@ -302,19 +301,19 @@ var BarfyStars = function (_ElementController) {
         w.style.bottom = _this2.originalStyle.bottom;
         w.style.left = _this2.originalStyle.left;
         w.style.marginRight = _this2.originalStyle.marginRight;
-        w.style.pointerEvents = 'none';
+        w.style.pointerEvents = "none";
 
-        e.style.position = 'relative';
-        e.style.top = 'auto';
-        e.style.right = 'auto';
-        e.style.bottom = 'auto';
-        e.style.left = 'auto';
-        e.style.marginRight = 'auto';
-        e.style.pointerEvents = 'all';
+        e.style.position = "relative";
+        e.style.top = "auto";
+        e.style.right = "auto";
+        e.style.bottom = "auto";
+        e.style.left = "auto";
+        e.style.marginRight = "auto";
+        e.style.pointerEvents = "all";
       }, hasTimeout ? 300 : 0);
     }
   }, {
-    key: 'run',
+    key: "run",
     value: function run() {
       this.particles.forEach(function (particle) {
         particle.run();
@@ -325,7 +324,7 @@ var BarfyStars = function (_ElementController) {
       }
     }
   }, {
-    key: 'addParticles',
+    key: "addParticles",
     value: function addParticles() {
       if (this.working) {
         for (var i = 0; i < this.numParticles; i++) {
@@ -335,7 +334,7 @@ var BarfyStars = function (_ElementController) {
       }
     }
   }, {
-    key: 'addParticle',
+    key: "addParticle",
     value: function addParticle() {
       if (fpsMeasure.average60 > 20) {
         var particle = new Particle(this);
@@ -344,7 +343,7 @@ var BarfyStars = function (_ElementController) {
       }
     }
   }, {
-    key: 'removeParticle',
+    key: "removeParticle",
     value: function removeParticle(particle) {
       var _this3 = this;
 
@@ -363,7 +362,7 @@ var BarfyStars = function (_ElementController) {
       }, 0);
     }
   }, {
-    key: 'configured',
+    key: "configured",
     set: function set(value) {
       this._configured = value === true;
     },
@@ -371,7 +370,7 @@ var BarfyStars = function (_ElementController) {
       return this._configured === true;
     }
   }, {
-    key: 'working',
+    key: "working",
     set: function set(value) {
       this._working = value === true;
     },
@@ -379,7 +378,7 @@ var BarfyStars = function (_ElementController) {
       return this._working === true;
     }
   }, {
-    key: 'running',
+    key: "running",
     set: function set(value) {
       var oldValue = this.running;
       this._running = value === true;
@@ -391,17 +390,17 @@ var BarfyStars = function (_ElementController) {
       return this._running === true;
     }
   }, {
-    key: 'wrapper',
+    key: "wrapper",
     get: function get() {
       if (!this._wrapper) {
-        this._wrapper = document.createElement('div');
+        this._wrapper = document.createElement("div");
         this._wrapper.className = this.wrapperClassname;
       }
 
       return this._wrapper;
     }
   }, {
-    key: 'particles',
+    key: "particles",
     get: function get() {
       if (!this._particles) {
         this._particles = [];
@@ -409,13 +408,13 @@ var BarfyStars = function (_ElementController) {
       return this._particles;
     }
   }, {
-    key: 'particleClasses',
+    key: "particleClasses",
     get: function get() {
       var c = this.particleBaseClassName;
-      return c + ' ' + c + '--' + Math.ceil(Math.random() * this.numUniqueParticles);
+      return c + " " + c + "--" + Math.ceil(Math.random() * this.numUniqueParticles);
     }
   }, {
-    key: 'numUniqueParticles',
+    key: "numUniqueParticles",
     set: function set(value) {
       if (!isNaN(value)) this._numUniqueParticles = value;
     },
@@ -423,34 +422,34 @@ var BarfyStars = function (_ElementController) {
       return this._numUniqueParticles || 5;
     }
   }, {
-    key: 'particleBaseClassName',
+    key: "particleBaseClassName",
     set: function set(value) {
-      if (typeof value == 'string') this._particleBaseClassName = value;
+      if (typeof value == "string") this._particleBaseClassName = value;
     },
     get: function get() {
-      return this._particleBaseClassName || 'BSParticle';
+      return this._particleBaseClassName || "BSParticle";
     }
   }, {
-    key: 'action',
+    key: "action",
     set: function set(value) {
-      this._action = ['hover', 'click', 'callback'].indexOf(value);
+      this._action = ["hover", "click", "callback"].indexOf(value);
       if (this._action < 0) this._action = 0;
     },
     get: function get() {
       return this._action || 0;
     }
   }, {
-    key: 'wrapperClassname',
+    key: "wrapperClassname",
     set: function set(value) {
-      if (typeof value == 'string' && value.length > 3) {
+      if (typeof value == "string" && value.length > 3) {
         this._wrapperClassname = value;
       }
     },
     get: function get() {
-      return (this._wrapperClassname || 'starburst') + (' ' + this.additionalClasses);
+      return (this._wrapperClassname || "starburst") + (" " + this.additionalClasses);
     }
   }, {
-    key: 'momentum',
+    key: "momentum",
     set: function set(value) {
       if (!isNaN(value)) this._momentum = value;
     },
@@ -458,7 +457,7 @@ var BarfyStars = function (_ElementController) {
       return this._momentum || null;
     }
   }, {
-    key: 'gravity',
+    key: "gravity",
     set: function set(value) {
       if (!isNaN(value)) this._gravity = value;
     },
@@ -466,7 +465,7 @@ var BarfyStars = function (_ElementController) {
       return this._gravity || null;
     }
   }, {
-    key: 'friction',
+    key: "friction",
     set: function set(value) {
       if (!isNaN(value)) this._friction = value;
     },
@@ -474,7 +473,7 @@ var BarfyStars = function (_ElementController) {
       return this._friction || null;
     }
   }, {
-    key: 'numParticles',
+    key: "numParticles",
     set: function set(value) {
       if (!isNaN(value)) this._numParticles = value;
     },
@@ -482,7 +481,7 @@ var BarfyStars = function (_ElementController) {
       return this._numParticles || 20;
     }
   }, {
-    key: 'scaleInitial',
+    key: "scaleInitial",
     set: function set(value) {
       if (!isNaN(value)) this._scaleInitial = value;
     },
@@ -490,7 +489,7 @@ var BarfyStars = function (_ElementController) {
       return this._scaleInitial || null;
     }
   }, {
-    key: 'scaleFactor',
+    key: "scaleFactor",
     set: function set(value) {
       if (!isNaN(value)) this._scaleFactor = value;
     },
@@ -498,7 +497,7 @@ var BarfyStars = function (_ElementController) {
       return this._scaleFactor || null;
     }
   }, {
-    key: 'removeAt',
+    key: "removeAt",
     set: function set(value) {
       if (!isNaN(value)) this._removeAt = value;
     },
@@ -506,15 +505,15 @@ var BarfyStars = function (_ElementController) {
       return this._removeAt || null;
     }
   }, {
-    key: 'additionalClasses',
+    key: "additionalClasses",
     set: function set(value) {
-      if (typeof value == 'string') this._additionalClasses = value;
+      if (typeof value == "string") this._additionalClasses = value;
     },
     get: function get() {
-      return this._additionalClasses || '';
+      return this._additionalClasses || "";
     }
   }, {
-    key: 'respondToResize',
+    key: "respondToResize",
     set: function set(value) {
       this._respondToResize = value === true;
     },
@@ -522,19 +521,19 @@ var BarfyStars = function (_ElementController) {
       return this._respondToResize !== false;
     }
   }, {
-    key: 'eventName',
+    key: "eventName",
     set: function set(value) {
-      if (typeof value === 'string') this._eventName = value;
+      if (typeof value === "string") this._eventName = value;
     },
     get: function get() {
-      return this._eventName || 'barf_stars';
+      return this._eventName || "barf_stars";
     }
   }]);
 
   return BarfyStars;
 }(_wtcControllerElement2.default);
 
-_wtcControllerElement.ExecuteControllers.registerController(BarfyStars, 'BarfyStars');
+_wtcControllerElement.ExecuteControllers.registerController(BarfyStars, "BarfyStars");
 
 exports.BarfyStars = BarfyStars;
 exports.Particle = Particle;

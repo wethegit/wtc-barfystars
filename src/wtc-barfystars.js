@@ -1,6 +1,9 @@
-import {default as ElementController, ExecuteControllers}  from 'wtc-controller-element';
-import vector from 'wtc-vector';
-import getFPSMeasure from 'wtc-measure-fps';
+import {
+  default as ElementController,
+  ExecuteControllers
+} from "wtc-controller-element";
+import vector from "wtc-vector";
+import getFPSMeasure from "wtc-measure-fps";
 
 const ACTIONS = {
   HOVER: 0,
@@ -10,21 +13,19 @@ const ACTIONS = {
 
 let fpsMeasure = getFPSMeasure();
 
-
 /**
  * The Particle class is responsible for undertaking the calculations based on properties
  * provided by the Simulation class.
- * 
+ *
  * @class Particle
  * @author Liam Egan <liam@wethecollective.com>
  * @version 0.1.0
  * @created July 4th, 2017
  */
 class Particle {
-
   /**
    * Creates an instance of Particle.
-   * 
+   *
    * @constructor
    * @param {BarfyStars} emitter         The emitter class that provides the properties.
    * @memberOf Particle
@@ -32,17 +33,21 @@ class Particle {
   constructor(emitter) {
     let iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-    if(!iOS) {
+    if (!iOS) {
       this.emitter = emitter;
-      this.element = document.createElement('span');
+      this.element = document.createElement("span");
       this.element.className = this.emitter.particleClasses;
 
       let randomFactorX = Math.random();
-      this.momentum = new vector((this.momentumfactor * -1) + (randomFactorX * (this.momentumfactor * 2)), (this.momentumfactor * -1) + Math.random() * (this.momentumfactor * (-1 - this.gravityFactor)));
+      this.momentum = new vector(
+        this.momentumfactor * -1 + randomFactorX * (this.momentumfactor * 2),
+        this.momentumfactor * -1 +
+          Math.random() * (this.momentumfactor * (-1 - this.gravityFactor))
+      );
       this.position = this.momentum.multiplyScalarNew(10);
       this.position.y = 0;
       this.position.add(new vector(0, 0));
-      this.position = new vector(0,0);
+      this.position = new vector(0, 0);
 
       this.scale = this.scaleInitial + Math.random() * this.scaleFactor;
       this.opacity = 1;
@@ -55,7 +60,7 @@ class Particle {
 
   /**
    * Runs the simulation for the particle.
-   *  
+   *
    * @memberOf Particle
    */
   run() {
@@ -67,10 +72,10 @@ class Particle {
     this.opacity *= this.friction + 0.01;
     this.position = pos;
 
-    this.element.style.transform = `translate(${ this.position.x }px, ${ this.position.y }px) scale(${ this.scale }) rotate(${ this.rotation }deg)`;
+    this.element.style.transform = `translate(${this.position.x}px, ${this.position.y}px) scale(${this.scale}) rotate(${this.rotation}deg)`;
     this.element.style.opacity = this.opacity;
 
-    if(this.scale < this.removeAt || fpsMeasure.average60 < 5) {
+    if (this.scale < this.removeAt || fpsMeasure.average60 < 5) {
       this.emitter.removeParticle(this);
     }
   }
@@ -82,12 +87,12 @@ class Particle {
   /**
    * (getter/setter) The momentum factor for the particle.
    * If not provided, tries to find the value on the emitter.
-   * 
+   *
    * @memberOf Particle
    * @default 5.0
    */
   set momentumfactor(value) {
-    if( !isNaN(value) ) {
+    if (!isNaN(value)) {
       this._momentumfactor = value;
     }
   }
@@ -97,12 +102,12 @@ class Particle {
 
   /**
    * (getter/setter) The friction of the particle.
-   * 
+   *
    * @memberOf Particle
    * @default 0.999
    */
   set friction(value) {
-    if( !isNaN(value) ) {
+    if (!isNaN(value)) {
       this._friction = value;
     }
   }
@@ -113,7 +118,7 @@ class Particle {
   /**
    * (getter) The scaleInitial property is the initial scale of the particle.
    * This property is derived from the emitter.
-   * 
+   *
    * @readonly
    * @memberOf Particle
    * @default 0.5
@@ -125,7 +130,7 @@ class Particle {
   /**
    * (getter) scaleFactor is the amount of scaling that happens on the particle initially.
    * This property is derived from the emitter.
-   * 
+   *
    * @readonly
    * @memberOf Particle
    * @default 0.8
@@ -137,7 +142,7 @@ class Particle {
   /**
    * (getter) removeAt determines the point, in scale, at which the particle is removed.
    * This property is derived from the emitter.
-   * 
+   *
    * @readonly
    * @memberOf Particle
    * @default 0.05
@@ -149,7 +154,7 @@ class Particle {
   /**
    * (getter) the gravity determines the speed at which the particle falls.
    * This property is derived from the emitter.
-   * 
+   *
    * @readonly
    * @memberOf Particle
    * @default 0.05
@@ -164,7 +169,7 @@ class BarfyStars extends ElementController {
     super(element);
 
     try {
-      if(element.dataset.config) {
+      if (element.dataset.config) {
         let config = JSON.parse(element.dataset.config);
         this.action = config.action;
         this.momentum = config.momentum;
@@ -176,7 +181,7 @@ class BarfyStars extends ElementController {
         this.scaleFactor = config.scaleFactor;
         this.removeAt = config.removeAt;
         this.additionalClasses = config.additionalClasses;
-        this.respondToResize = config.respondToResize != 'false';
+        this.respondToResize = config.respondToResize != "false";
         this.eventName = config.eventName;
       }
 
@@ -186,35 +191,35 @@ class BarfyStars extends ElementController {
       console.log(error);
     }
 
-    if(this.respondToResize) {
-      window.addEventListener('resize', ()=> {
+    if (this.respondToResize) {
+      window.addEventListener("resize", () => {
         clearTimeout(this.cssTimeout);
         this.ammendCSS();
       });
     }
 
-    if(this.configured) {
+    if (this.configured) {
       this.originalStyle = getComputedStyle(this.element);
       this.element.parentElement.insertBefore(this.wrapper, this.element);
       this.wrapper.appendChild(this.element);
       this.ammendCSS(false);
 
       // @TODO All of this needs to be cleaned up to alleviate memory leaks
-      if(this.action == ACTIONS.HOVER) {
-        this.element.addEventListener('touchstart', ()=> {
+      if (this.action == ACTIONS.HOVER) {
+        this.element.addEventListener("touchstart", () => {
           this.touching = true;
         });
-        this.element.addEventListener('mouseenter', ()=> {
-          if(this.touching) return true;
+        this.element.addEventListener("mouseenter", () => {
+          if (this.touching) return true;
           this.addParticles();
         });
-        this.element.addEventListener('touchend', ()=> {
+        this.element.addEventListener("touchend", () => {
           this.touching = false;
         });
-        this.element.addEventListener('touchcancel', ()=> {
+        this.element.addEventListener("touchcancel", () => {
           this.touching = false;
         });
-      } else if(this.action == ACTIONS.CALLBACK) {
+      } else if (this.action == ACTIONS.CALLBACK) {
         window.addEventListener(this.eventName, () => {
           this.addParticles();
         });
@@ -226,74 +231,74 @@ class BarfyStars extends ElementController {
     let w = this.wrapper;
     let e = this.element;
 
-    w.style.cssText = '';
-    e.style.cssText = '';
+    w.style.cssText = "";
+    e.style.cssText = "";
 
-    this.cssTimeout = setTimeout(()=> {
-      w.style.display = this.originalStyle.display;
-      w.style.position = this.originalStyle.position;
-      w.style.width = this.originalStyle.width;
-      w.style.height = this.originalStyle.height;
-      w.style.top = this.originalStyle.top;
-      w.style.right = this.originalStyle.right;
-      w.style.bottom = this.originalStyle.bottom;
-      w.style.left = this.originalStyle.left;
-      w.style.marginRight = this.originalStyle.marginRight;
-      w.style.pointerEvents = 'none';
+    this.cssTimeout = setTimeout(
+      () => {
+        w.style.display = this.originalStyle.display;
+        w.style.position = this.originalStyle.position;
+        w.style.width = this.originalStyle.width;
+        w.style.height = this.originalStyle.height;
+        w.style.top = this.originalStyle.top;
+        w.style.right = this.originalStyle.right;
+        w.style.bottom = this.originalStyle.bottom;
+        w.style.left = this.originalStyle.left;
+        w.style.marginRight = this.originalStyle.marginRight;
+        w.style.pointerEvents = "none";
 
-      e.style.position = 'relative';
-      e.style.top = 'auto';
-      e.style.right = 'auto';
-      e.style.bottom = 'auto';
-      e.style.left = 'auto';
-      e.style.marginRight = 'auto';
-      e.style.pointerEvents = 'all';
-    }, hasTimeout ? 300 : 0);
+        e.style.position = "relative";
+        e.style.top = "auto";
+        e.style.right = "auto";
+        e.style.bottom = "auto";
+        e.style.left = "auto";
+        e.style.marginRight = "auto";
+        e.style.pointerEvents = "all";
+      },
+      hasTimeout ? 300 : 0
+    );
   }
 
   run() {
-    this.particles.forEach((particle)=> {
+    this.particles.forEach(particle => {
       particle.run();
     });
 
-    if(this.running) {
+    if (this.running) {
       requestAnimationFrame(this.run.bind(this));
     }
   }
 
   addParticles() {
-    if(this.working) {
-      for(let i = 0; i < this.numParticles; i++ ) {
+    if (this.working) {
+      for (let i = 0; i < this.numParticles; i++) {
         this.addParticle();
       }
       this.running = true;
     }
   }
   addParticle() {
-    if(fpsMeasure.average60 > 20) {
+    if (fpsMeasure.average60 > 20) {
       let particle = new Particle(this);
       this.particles.push(particle);
       this.element.appendChild(particle.element);
     }
   }
   removeParticle(particle) {
-    setTimeout(()=> {
-      for(let i = this.particles.length -1; i >= 0; i--) {
-        if(this.particles[i] === particle) {
+    setTimeout(() => {
+      for (let i = this.particles.length - 1; i >= 0; i--) {
+        if (this.particles[i] === particle) {
           this.particles.splice(i, 1);
         }
       }
-      if(this.particles.length <= 0) {
+      if (this.particles.length <= 0) {
         this.running = false;
       }
       try {
         this.element.removeChild(particle.element);
-      } catch (error) {
-        
-      }
+      } catch (error) {}
     }, 0);
   }
-  
 
   set configured(value) {
     this._configured = value === true;
@@ -312,7 +317,7 @@ class BarfyStars extends ElementController {
   set running(value) {
     let oldValue = this.running;
     this._running = value === true;
-    if(this._running === true && oldValue === false) {
+    if (this._running === true && oldValue === false) {
       this.run();
     }
   }
@@ -321,8 +326,8 @@ class BarfyStars extends ElementController {
   }
 
   get wrapper() {
-    if(!this._wrapper) {
-      this._wrapper = document.createElement('div');
+    if (!this._wrapper) {
+      this._wrapper = document.createElement("div");
       this._wrapper.className = this.wrapperClassname;
     }
 
@@ -330,7 +335,7 @@ class BarfyStars extends ElementController {
   }
 
   get particles() {
-    if(!this._particles) {
+    if (!this._particles) {
       this._particles = [];
     }
     return this._particles;
@@ -338,94 +343,98 @@ class BarfyStars extends ElementController {
 
   get particleClasses() {
     let c = this.particleBaseClassName;
-    return c + ' ' + c + '--' + Math.ceil(Math.random() * this.numUniqueParticles);
+    return (
+      c + " " + c + "--" + Math.ceil(Math.random() * this.numUniqueParticles)
+    );
   }
 
   set numUniqueParticles(value) {
-    if( !isNaN(value) ) this._numUniqueParticles = value;
+    if (!isNaN(value)) this._numUniqueParticles = value;
   }
   get numUniqueParticles() {
     return this._numUniqueParticles || 5;
   }
 
   set particleBaseClassName(value) {
-    if(typeof value == 'string') this._particleBaseClassName = value;
+    if (typeof value == "string") this._particleBaseClassName = value;
   }
   get particleBaseClassName() {
-    return this._particleBaseClassName || 'BSParticle';
+    return this._particleBaseClassName || "BSParticle";
   }
 
   set action(value) {
-    this._action = ['hover', 'click', 'callback'].indexOf(value);
-    if(this._action < 0) this._action = 0;
+    this._action = ["hover", "click", "callback"].indexOf(value);
+    if (this._action < 0) this._action = 0;
   }
   get action() {
     return this._action || 0;
   }
 
   set wrapperClassname(value) {
-    if(typeof value == 'string' && value.length > 3) {
+    if (typeof value == "string" && value.length > 3) {
       this._wrapperClassname = value;
     }
   }
   get wrapperClassname() {
-    return (this._wrapperClassname || 'starburst') + (' ' + this.additionalClasses);
+    return (
+      (this._wrapperClassname || "starburst") + (" " + this.additionalClasses)
+    );
   }
 
   set momentum(value) {
-    if( !isNaN(value) ) this._momentum = value;
+    if (!isNaN(value)) this._momentum = value;
   }
   get momentum() {
     return this._momentum || null;
   }
 
   set gravity(value) {
-    if( !isNaN(value) ) this._gravity = value;
+    if (!isNaN(value)) this._gravity = value;
   }
   get gravity() {
     return this._gravity || null;
   }
 
   set friction(value) {
-    if( !isNaN(value) ) this._friction = value;
+    if (!isNaN(value)) this._friction = value;
   }
   get friction() {
     return this._friction || null;
   }
 
   set numParticles(value) {
-    if( !isNaN(value) ) this._numParticles = value;
+    if (!isNaN(value)) this._numParticles = value;
   }
   get numParticles() {
     return this._numParticles || 20;
   }
 
   set scaleInitial(value) {
-    if( !isNaN(value) ) this._scaleInitial = value;
+    if (!isNaN(value)) this._scaleInitial = value;
   }
   get scaleInitial() {
     return this._scaleInitial || null;
   }
 
   set scaleFactor(value) {
-    if( !isNaN(value) ) this._scaleFactor = value;
+    if (!isNaN(value)) this._scaleFactor = value;
   }
   get scaleFactor() {
     return this._scaleFactor || null;
   }
 
   set removeAt(value) {
-    if( !isNaN(value) ) this._removeAt = value;
+    if (!isNaN(value)) this._removeAt = value;
   }
   get removeAt() {
     return this._removeAt || null;
   }
 
   set additionalClasses(value) {
-    if(typeof value == 'string') this._additionalClasses = value;
+    if (typeof value == "string") this._additionalClasses = value;
   }
   get additionalClasses() {
-    return this._additionalClasses || '';
+    return this._additionalClasses || "";
   }
 
   set respondToResize(value) {
@@ -434,15 +443,15 @@ class BarfyStars extends ElementController {
   get respondToResize() {
     return this._respondToResize !== false;
   }
-  
+
   set eventName(value) {
-    if(typeof(value) === 'string') this._eventName = value;
+    if (typeof value === "string") this._eventName = value;
   }
   get eventName() {
-    return this._eventName || 'barf_stars';
+    return this._eventName || "barf_stars";
   }
 }
 
-ExecuteControllers.registerController(BarfyStars, 'BarfyStars');
+ExecuteControllers.registerController(BarfyStars, "BarfyStars");
 
 export { BarfyStars, Particle, ACTIONS };

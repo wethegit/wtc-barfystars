@@ -1,6 +1,6 @@
 {
   "name": "wtc-barfystars",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "ES6 Barfy Stars controller",
   "main": "dist/wtc-barfystars.js",
   "scripts": {
@@ -16,11 +16,10 @@
     "babel-preset-env": "^1.6.1",
     "webpack": "^3.10.0",
     "wtc-controller-element": "^1.1.1",
-    "wtc-measure-fps": "^0.0.1",
-    "wtc-vector": "^0.1.11"    
+    "wtc-measure-fps": "^0.0.2",
+    "wtc-vector": "^0.1.11"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wethegit/wtc-barfystars.git"
