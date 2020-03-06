@@ -280,8 +280,10 @@ class BarfyStars extends ElementController {
   addParticle() {
     if (fpsMeasure.average60 > 20) {
       let particle = new Particle(this);
-      this.particles.push(particle);
-      this.element.appendChild(particle.element);
+      if (particle.element) {
+        this.particles.push(particle);
+        this.element.appendChild(particle.element);
+      }
     }
   }
   removeParticle(particle) {

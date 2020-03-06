@@ -338,8 +338,10 @@ var BarfyStars = function (_ElementController) {
     value: function addParticle() {
       if (fpsMeasure.average60 > 20) {
         var particle = new Particle(this);
-        this.particles.push(particle);
-        this.element.appendChild(particle.element);
+        if (particle.element) {
+          this.particles.push(particle);
+          this.element.appendChild(particle.element);
+        }
       }
     }
   }, {
