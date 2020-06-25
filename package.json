@@ -1,8 +1,9 @@
 {
   "name": "wtc-barfystars",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "ES6 Barfy Stars controller",
   "main": "dist/wtc-barfystars.js",
+  "style": "dist/wtc-barfystars.css",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx babel src/ --presets env --out-dir dist",
