@@ -23,35 +23,46 @@ const barfUnicorns = new BarfyStars(document.getElementById("unicorns"));
 </button>
 ```
 
-Properties can be provided to the controller through the `data-config` attribute. This attribute must be JSON formatted and properies can be as follows:
+Properties can be provided to the controller through the `data-config` attribute. This attribute must be **JSON** formatted and properies can be as follows:
 
-- **action** default: hover
-  The action that triggers the barfy stars.
-  Can be one of:
-  - **hover** Triggers the action on hover (default)
-  - **click** Triggers the action on click (TBI)
-  - **callback** Triggers the action on callback (TBI)
-- **momentum** default: null
-  The initial momentum for the particles.
-- **gravity** default: null
-  The gravity to apply to the particles.
-- **friction** default: null
-  The friction to apply to the particles' momentum.
-- **numParticles** default: 20
-  The number of particles to spawn.
-- **numUniqueParticles** default: 5
-- **scaleInitial** default: null
-  The initial scale of the particles
-- **scaleFactor** default: null
-  A multiplier used to reduce the scale of the particles over time.
-- **removeAt** default: null
-  The point, in scale, at which the particles need to be removed.
-- **additionalClasses** default: ''
-  Additional classes to be provided to the containing element.
-- **respondToResize** default: true
-  Whether the element should respond to resize events. This should happen when the positioning of the anchor also changes in response to resize
-- **eventName** default: 'barf_stars'
-  This indicates the event to custom listen to on the window that causes the stars to barf if the controller is set to `action:callback`
+**action** | String | default: `'hover'`  
+The action that triggers the barfy stars.  
+Can be one of:  
+- **hover** Triggers the action on hover (default)
+- **click** Triggers the action on click (TBI)
+- **callback** Triggers the action on callback (TBI)
+
+**momentum** | Float | default: `null`  
+The initial momentum for the particles.
+
+**gravity** | Float | default: `null`  
+The gravity to apply to the particles.
+
+**friction** | Float | default: `null`  
+The friction to apply to the particles' momentum.
+
+**numParticles** | Integer | default: `20`  
+The number of particles to spawn.
+
+**numUniqueParticles** | Integer | default: `5`  
+
+**scaleInitial** | Float | default: `null`  
+The initial scale of the particles
+
+**scaleFactor** | Float | default: `null`  
+A multiplier used to reduce the scale of the particles over time.
+
+**removeAt** | Float | default: `null`  
+The point, in scale, at which the particles need to be removed.
+
+**additionalClasses** | String | default: `''`  
+Additional classes to be provided to the containing element.
+
+**respondToResize** | Boolean | default: `true`  
+Whether the element should respond to resize events. This should happen when the positioning of the anchor also changes in response to resize
+
+**eventName** | String | default: `'barf_stars'`  
+This indicates the event to custom listen to on the window that causes the stars to barf if the controller is set to `action:callback`
 
 ### CSS
 
@@ -90,4 +101,3 @@ Customize it as you want:
 
 - Implement click and callback actions
 - Implement deferred elements to contain the barfy stars
-- Add some more helful detail to this readme
