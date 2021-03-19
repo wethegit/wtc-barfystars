@@ -1,22 +1,30 @@
 # wtc-barfystars
-This is a controller intended to be used with [wtc-controller-execute](https://github.com/wethegit/wtc-controller-execute) to provide a particle system fountain effect to anchors.
+
+Turn any element into a particle system fountain.
 
 ## usage
-### Javascript
-```
-import {ExecuteControllers} from 'wtc-controller-element';
-import { BarfyStars, Particle, ACTIONS } from 'wtc-barfystars';
 
-// Instanciate all controllers
-ExecuteControllers.instanciateAll();
+### Javascript
+
+```js
+import BarfyStars from "https://cdn.skypack.dev/wtc-barfystars";
+
+const barfUnicorns = new BarfyStars(document.getElementById("unicorns"));
 ```
 
 ### HTML
-```
-<a href="#" data-controller="BarfyStars", data-config='{ "respondToResize": "false", "additionalClasses": "platform-link" }'>Text link</a>
+
+```html
+<button
+  id="unicorns"
+  data-config='{ "respondToResize": "false", "additionalClasses": "platform-link" }'
+>
+  Click me 🦄
+</button>
 ```
 
-Properties can be provided to the controller through the data-config attribute. This attribute must be JSON formatted and properies can be as follows:
+Properties can be provided to the controller through the `data-config` attribute. This attribute must be JSON formatted and properies can be as follows:
+
 - **action** default: hover
   The action that triggers the barfy stars.
   Can be one of:
@@ -46,43 +54,40 @@ Properties can be provided to the controller through the data-config attribute. 
   This indicates the event to custom listen to on the window that causes the stars to barf if the controller is set to `action:callback`
 
 ### CSS
-```
-.BSParticle {
-  display: block;
-  height: 1px;
-  left: 50%;
-  position: absolute;
-  pointer-events: none;
-  top: 50%;
-  width: 1px;
-  z-index: 3;
 
-  &::after {
-    background: image-url('star-single.png');
-    background-size: 100% 100%;
-    content: '';
-    display: block;
-    height: 102px;
-    position: absolute;
-    transform: translate(-51px, -51px);
-    width: 102px;
-  }
+Add the default css:
+
+```html
+<link
+  href="https://cdn.skypack.dev/wtc-barfystars/dist/wtc-barfystars.css"
+  rel="stylesheet"
+/>
+```
+
+Customize it as you want:
+
+```css
+.barfystars-particle::after {
+  content: "🦄";
+  font-size: 20px;
 }
-.BSParticle--2::after {
-  background: image-url('star-single-blue.png');
+.barfystars-particle--2::after {
+  content: "⭐️";
+  font-size: 10px;
 }
-.BSParticle--3::after {
-  background: image-url('star-single-green.png');
+.barfystars-particle--3::after {
+  font-size: 15px;
 }
-.BSParticle--4::after {
-  background: image-url('star-single-pink.png');
+.barfystars-particle--4::after {
+  font-size: 30px;
 }
-.BSParticle--5::after {
-  background: image-url('star-single-yellow.png');
+.barfystars-particle--5::after {
+  font-size: 8px;
 }
 ```
 
 ## TO DO
+
 - Implement click and callback actions
 - Implement deferred elements to contain the barfy stars
 - Add some more helful detail to this readme

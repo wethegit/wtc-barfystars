@@ -1,4 +1,4 @@
-.BSParticle {
+.barfystars-particle {
   display: block;
   height: 1px;
   left: 50%;
@@ -9,8 +9,8 @@
   z-index: 3;
 }
 
-.BSParticle::after {
-  content: '';
+.barfystars-particle::after {
+  content: "";
   background-size: contain;
   background-repeat: no-repeat;
   display: block;

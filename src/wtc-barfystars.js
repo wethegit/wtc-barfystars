@@ -1,14 +1,10 @@
-import {
-  default as ElementController,
-  ExecuteControllers
-} from "wtc-controller-element";
 import vector from "wtc-vector";
 import getFPSMeasure from "wtc-measure-fps";
 
 const ACTIONS = {
   HOVER: 0,
   CLICK: 1,
-  CALLBACK: 2
+  CALLBACK: 2,
 };
 
 let fpsMeasure = getFPSMeasure();
@@ -164,13 +160,14 @@ class Particle {
   }
 }
 
-class BarfyStars extends ElementController {
+class BarfyStars {
   constructor(element) {
-    super(element);
+    this.element = element;
 
     try {
       if (element.dataset.config) {
         let config = JSON.parse(element.dataset.config);
+
         this.action = config.action;
         this.momentum = config.momentum;
         this.gravity = config.gravity;
@@ -260,7 +257,7 @@ class BarfyStars extends ElementController {
   }
 
   run() {
-    this.particles.forEach(particle => {
+    this.particles.forEach((particle) => {
       particle.run();
     });
 
@@ -361,7 +358,7 @@ class BarfyStars extends ElementController {
     if (typeof value == "string") this._particleBaseClassName = value;
   }
   get particleBaseClassName() {
-    return this._particleBaseClassName || "BSParticle";
+    return this._particleBaseClassName || "barfystars-particle";
   }
 
   set action(value) {
@@ -454,6 +451,4 @@ class BarfyStars extends ElementController {
   }
 }
 
-ExecuteControllers.registerController(BarfyStars, "BarfyStars");
-
-export { BarfyStars, Particle, ACTIONS };
+export { BarfyStars as default, Particle, ACTIONS };
