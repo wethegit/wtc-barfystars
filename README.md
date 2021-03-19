@@ -2,7 +2,7 @@
 
 Turn any element into a particle system fountain.
 
-## usage
+## Usage
 
 ### Javascript
 
@@ -17,12 +17,41 @@ const barfUnicorns = new BarfyStars(document.getElementById("unicorns"));
 ```html
 <button
   id="unicorns"
-  data-config='{ "respondToResize": "false", "additionalClasses": "platform-link" }'
+  data-config='{ "numUniqueParticles": 3 }'
 >
   Click me 🦄
 </button>
 ```
 
+
+### CSS
+
+Add the default css:
+
+```html
+<link
+  href="https://cdn.skypack.dev/wtc-barfystars/dist/wtc-barfystars.css"
+  rel="stylesheet"
+/>
+```
+
+Customize it as you want:
+
+```css
+.barfystars-particle::after {
+  content: "🦄";
+  font-size: 30px;
+}
+.barfystars-particle--2::after {
+  content: "⭐️";
+  font-size: 20px;
+}
+.barfystars-particle--3::after {
+  font-size: 25px;
+}
+```
+
+## Options
 Properties can be provided to the controller through the `data-config` attribute. This attribute must be **JSON** formatted and properies can be as follows:
 
 **action** | String | default: `'hover'`  
@@ -63,39 +92,6 @@ Whether the element should respond to resize events. This should happen when the
 
 **eventName** | String | default: `'barf_stars'`  
 This indicates the event to custom listen to on the window that causes the stars to barf if the controller is set to `action:callback`
-
-### CSS
-
-Add the default css:
-
-```html
-<link
-  href="https://cdn.skypack.dev/wtc-barfystars/dist/wtc-barfystars.css"
-  rel="stylesheet"
-/>
-```
-
-Customize it as you want:
-
-```css
-.barfystars-particle::after {
-  content: "🦄";
-  font-size: 20px;
-}
-.barfystars-particle--2::after {
-  content: "⭐️";
-  font-size: 10px;
-}
-.barfystars-particle--3::after {
-  font-size: 15px;
-}
-.barfystars-particle--4::after {
-  font-size: 30px;
-}
-.barfystars-particle--5::after {
-  font-size: 8px;
-}
-```
 
 ## TO DO
 
