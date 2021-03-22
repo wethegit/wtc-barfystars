@@ -48,6 +48,7 @@ Customize it as you want:
     font-size: 20px;
   }
   .barfystars-particle--3::after {
+    content: "☄️";
     font-size: 25px;
   }
 }
