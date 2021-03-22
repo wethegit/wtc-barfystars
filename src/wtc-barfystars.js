@@ -27,31 +27,27 @@ class Particle {
    * @memberOf Particle
    */
   constructor(emitter) {
-    let iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    this.emitter = emitter;
+    this.element = document.createElement("span");
+    this.element.className = this.emitter.particleClasses;
 
-    if (!iOS) {
-      this.emitter = emitter;
-      this.element = document.createElement("span");
-      this.element.className = this.emitter.particleClasses;
+    let randomFactorX = Math.random();
+    this.momentum = new vector(
+      this.momentumfactor * -1 + randomFactorX * (this.momentumfactor * 2),
+      this.momentumfactor * -1 +
+        Math.random() * (this.momentumfactor * (-1 - this.gravityFactor))
+    );
+    this.position = this.momentum.multiplyScalarNew(10);
+    this.position.y = 0;
+    this.position.add(new vector(0, 0));
+    this.position = new vector(0, 0);
 
-      let randomFactorX = Math.random();
-      this.momentum = new vector(
-        this.momentumfactor * -1 + randomFactorX * (this.momentumfactor * 2),
-        this.momentumfactor * -1 +
-          Math.random() * (this.momentumfactor * (-1 - this.gravityFactor))
-      );
-      this.position = this.momentum.multiplyScalarNew(10);
-      this.position.y = 0;
-      this.position.add(new vector(0, 0));
-      this.position = new vector(0, 0);
+    this.scale = this.scaleInitial + Math.random() * this.scaleFactor;
+    this.opacity = 1;
+    this.gravity = new vector(0, this.gravityFactor);
+    this.rotation = this.momentum.x;
 
-      this.scale = this.scaleInitial + Math.random() * this.scaleFactor;
-      this.opacity = 1;
-      this.gravity = new vector(0, this.gravityFactor);
-      this.rotation = this.momentum.x;
-
-      this.run();
-    }
+    this.run();
   }
 
   /**
@@ -61,6 +57,7 @@ class Particle {
    */
   run() {
     let pos = this.position.clone();
+
     this.momentum.scale(this.friction).add(this.gravity);
     pos.add(this.momentum);
     this.rotation += this.momentum.x;
@@ -71,9 +68,8 @@ class Particle {
     this.element.style.transform = `translate(${this.position.x}px, ${this.position.y}px) scale(${this.scale}) rotate(${this.rotation}deg)`;
     this.element.style.opacity = this.opacity;
 
-    if (this.scale < this.removeAt || fpsMeasure.average60 < 5) {
+    if (this.scale < this.removeAt || fpsMeasure.average60 < 5)
       this.emitter.removeParticle(this);
-    }
   }
 
   /**
@@ -88,10 +84,9 @@ class Particle {
    * @default 5.0
    */
   set momentumfactor(value) {
-    if (!isNaN(value)) {
-      this._momentumfactor = value;
-    }
+    if (!isNaN(value)) this._momentumfactor = value;
   }
+
   get momentumfactor() {
     return this._momentumfactor || this.emitter.momentum || 5.0;
   }
@@ -103,9 +98,7 @@ class Particle {
    * @default 0.999
    */
   set friction(value) {
-    if (!isNaN(value)) {
-      this._friction = value;
-    }
+    if (value && typeof value === "number") this._friction = value;
   }
   get friction() {
     return this._friction || this.emitter.friction || 0.999;
@@ -201,25 +194,20 @@ class BarfyStars {
       this.wrapper.appendChild(this.element);
       this.ammendCSS(false);
 
-      // @TODO All of this needs to be cleaned up to alleviate memory leaks
-      if (this.action == ACTIONS.HOVER) {
-        this.element.addEventListener("touchstart", () => {
-          this.touching = true;
-        });
-        this.element.addEventListener("mouseenter", () => {
-          if (this.touching) return true;
-          this.addParticles();
-        });
-        this.element.addEventListener("touchend", () => {
-          this.touching = false;
-        });
-        this.element.addEventListener("touchcancel", () => {
-          this.touching = false;
-        });
-      } else if (this.action == ACTIONS.CALLBACK) {
-        window.addEventListener(this.eventName, () => {
-          this.addParticles();
-        });
+      const onEventCallback = this.onEventCallback.bind(this);
+
+      switch (this.action) {
+        case ACTIONS.CLICK:
+          this.element.addEventListener("click", onEventCallback);
+          break;
+
+        case ACTIONS.CALLBACK:
+          window.addEventListener(this.eventName, onEventCallback);
+          break;
+
+        default:
+          this.element.addEventListener("pointerenter", onEventCallback);
+          break;
       }
     }
   }
@@ -261,9 +249,7 @@ class BarfyStars {
       particle.run();
     });
 
-    if (this.running) {
-      requestAnimationFrame(this.run.bind(this));
-    }
+    if (this.running) requestAnimationFrame(this.run.bind(this));
   }
 
   addParticles() {
@@ -274,6 +260,7 @@ class BarfyStars {
       this.running = true;
     }
   }
+
   addParticle() {
     if (fpsMeasure.average60 > 20) {
       let particle = new Particle(this);
@@ -283,6 +270,7 @@ class BarfyStars {
       }
     }
   }
+
   removeParticle(particle) {
     setTimeout(() => {
       for (let i = this.particles.length - 1; i >= 0; i--) {

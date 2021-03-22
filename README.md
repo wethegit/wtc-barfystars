@@ -29,8 +29,8 @@ Properties can be provided to the controller through the `data-config` attribute
   The action that triggers the barfy stars.
   Can be one of:
   - **hover** Triggers the action on hover (default)
-  - **click** Triggers the action on click (TBI)
-  - **callback** Triggers the action on callback (TBI)
+  - **click** Triggers the action on click
+  - **callback** Triggers the action on callback (requires `eventName`)
 - **momentum** default: null
   The initial momentum for the particles.
 - **gravity** default: null
