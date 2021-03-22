@@ -364,7 +364,7 @@ class BarfyStars {
     }
   }
   get action() {
-    return this._action || 0;
+    return this._action;
   }
 
   set wrapperClassname(value) {
