@@ -196,18 +196,23 @@ class BarfyStars {
 
       const onEventCallback = this.onEventCallback.bind(this);
 
-      switch (this.action) {
-        case ACTIONS.CLICK:
-          this.element.addEventListener("click", onEventCallback);
-          break;
+      this.element.barfNow = onEventCallback;
 
-        case ACTIONS.CALLBACK:
-          window.addEventListener(this.eventName, onEventCallback);
-          break;
+      if (this.action !== false) {
+        switch (this.action) {
+          case ACTIONS.CLICK:
+            this.element.addEventListener("click", onEventCallback);
+            break;
 
-        default:
-          this.element.addEventListener("pointerenter", onEventCallback);
-          break;
+          case ACTIONS.CALLBACK:
+            window.addEventListener(this.eventName, onEventCallback);
+            break;
+
+          // default is `hover`
+          default:
+            this.element.addEventListener("pointerenter", onEventCallback);
+            break;
+        }
       }
     }
   }
@@ -350,8 +355,11 @@ class BarfyStars {
   }
 
   set action(value) {
-    this._action = ["hover", "click", "callback"].indexOf(value);
-    if (this._action < 0) this._action = 0;
+    if (value === false) this._action = value;
+    else {
+      this._action = ["hover", "click", "callback"].indexOf(value);
+      if (this._action < 0) this._action = 0;
+    }
   }
   get action() {
     return this._action || 0;

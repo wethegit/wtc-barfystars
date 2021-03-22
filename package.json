@@ -1,6 +1,6 @@
 {
   "name": "wtc-barfystars",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Turn any element into a particle system fountain.",
   "source": "src/wtc-barfystars.js",
   "main": "dist/wtc-barfystars.js",

@@ -16,7 +16,7 @@ const barfUnicorns = new BarfyStars(document.getElementById("unicorns"));
 
 ```html
 <button id="unicorns" data-config='{ "numUniqueParticles": 3 }'>
-  Click me 🦄
+  Hover me 🦄
 </button>
 ```
 
@@ -51,13 +51,14 @@ Customize it as you want:
 
 Properties can be provided to the controller through the `data-config` attribute. This attribute must be **JSON** formatted and properies can be as follows:
 
-**action** | String | default: `'hover'`  
+**action** | String || Boolean | default: `'hover'`  
 The action that triggers the barfy stars.  
 Can be one of:
 
 - **hover** Triggers the action on hover (default)
 - **click** Triggers the action on click
-- **callback** Triggers the action on callback (requires `eventName`)
+- **callback** Triggers the action on callback ([example](#using-action-callback))
+- **false** Events are turned off ([example](#no-action))
 
 **momentum** | Float | default: `null`  
 The initial momentum for the particles.
@@ -128,4 +129,33 @@ const barfCheckout = new BarfyStars(
 // when your user adds a product to the cart
 // all you have to do is fire the custom event
 window.dispatchEvent(new Event("barf_checkout"));
+```
+
+### Using `action: false`, manually barfing
+
+Be default a hook is attached to the element that can be used at any time to make it **barf**, _even when you select an `action`_.
+
+```html
+<img
+  id="my-logo"
+  src="./my-logo.jpg"
+  alt="iBarf logo"
+  data-config='{ "action": false, "numUniqueParticles": 1 }'
+/>
+```
+
+```css
+.barfystars-particle::after {
+  content: "🍎";
+  font-size: 20px;
+}
+```
+
+```js
+import BarfyStars from "https://cdn.skypack.dev/wtc-barfystars";
+
+const barfLogo = new BarfyStars(document.getElementById("my-logo"));
+
+// call hook any time
+barfLogo.barfNow();
 ```
