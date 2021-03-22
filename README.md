@@ -5,14 +5,6 @@ Turn any element into a particle system fountain.
 
 ## Usage
 
-### Javascript
-
-```js
-import BarfyStars from "https://cdn.skypack.dev/wtc-barfystars";
-
-const barfUnicorns = new BarfyStars(document.getElementById("unicorns"));
-```
-
 ### HTML
 
 ```html
@@ -30,6 +22,17 @@ Add the default css:
   href="https://cdn.skypack.dev/wtc-barfystars/dist/wtc-barfystars.css"
   rel="stylesheet"
 />
+```
+
+### Javascript
+
+```js
+import BarfyStars from "https://cdn.skypack.dev/wtc-barfystars";
+
+const barfUnicorns = new BarfyStars(document.getElementById("unicorns"));
+
+// you can also trigger it manually
+barfUnicorns.barf();
 ```
 
 Customize it as you want:
