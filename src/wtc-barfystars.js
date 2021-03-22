@@ -217,6 +217,10 @@ class BarfyStars {
     }
   }
 
+  onEventCallback() {
+    this.addParticles();
+  }
+
   ammendCSS(hasTimeout = true) {
     let w = this.wrapper;
     let e = this.element;
@@ -366,14 +370,13 @@ class BarfyStars {
   }
 
   set wrapperClassname(value) {
-    if (typeof value == "string" && value.length > 3) {
+    if (typeof value == "string" && value.length > 3)
       this._wrapperClassname = value;
-    }
   }
   get wrapperClassname() {
-    return (
-      (this._wrapperClassname || "starburst") + (" " + this.additionalClasses)
-    );
+    return `${this._wrapperClassname || "barfystars"} ${
+      this.additionalClasses
+    }`;
   }
 
   set momentum(value) {
