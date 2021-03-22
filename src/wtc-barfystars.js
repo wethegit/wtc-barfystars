@@ -194,30 +194,28 @@ class BarfyStars {
       this.wrapper.appendChild(this.element);
       this.ammendCSS(false);
 
-      const onEventCallback = this.onEventCallback.bind(this);
-
-      this.element.barfNow = onEventCallback;
+      const onBarf = this.barf.bind(this);
 
       if (this.action !== false) {
         switch (this.action) {
           case ACTIONS.CLICK:
-            this.element.addEventListener("click", onEventCallback);
+            this.element.addEventListener("click", onBarf);
             break;
 
           case ACTIONS.CALLBACK:
-            window.addEventListener(this.eventName, onEventCallback);
+            window.addEventListener(this.eventName, onBarf);
             break;
 
           // default is `hover`
           default:
-            this.element.addEventListener("pointerenter", onEventCallback);
+            this.element.addEventListener("pointerenter", onBarf);
             break;
         }
       }
     }
   }
 
-  onEventCallback() {
+  barf() {
     this.addParticles();
   }
 

@@ -1,6 +1,7 @@
 # wtc-barfystars
 
-Turn any element into a particle system fountain.
+Turn any element into a particle system fountain.  
+[Demo](https://codepen.io/team/wtc/pen/YzpmzRz)
 
 ## Usage
 
@@ -33,17 +34,19 @@ Add the default css:
 
 Customize it as you want:
 
-```css
-.barfystars-particle::after {
-  content: "🦄";
-  font-size: 30px;
-}
-.barfystars-particle--2::after {
-  content: "⭐️";
-  font-size: 20px;
-}
-.barfystars-particle--3::after {
-  font-size: 25px;
+```scss
+#unicorns {
+  .barfystars-particle::after {
+    content: "🦄";
+    font-size: 30px;
+  }
+  .barfystars-particle--2::after {
+    content: "⭐️";
+    font-size: 20px;
+  }
+  .barfystars-particle--3::after {
+    font-size: 25px;
+  }
 }
 ```
 
@@ -57,8 +60,10 @@ Can be one of:
 
 - **hover** Triggers the action on hover (default)
 - **click** Triggers the action on click
-- **callback** Triggers the action on callback ([example](#using-action-callback))
-- **false** Events are turned off ([example](#no-action))
+- **callback** Triggers the action on callback
+- **false** Events are turned off
+
+You can find examples of all `action` options on the [demo](https://codepen.io/team/wtc/pen/YzpmzRz).
 
 **momentum** | Float | default: `null`  
 The initial momentum for the particles.
@@ -91,71 +96,3 @@ Whether the element should respond to resize events. This should happen when the
 
 **eventName** | String | default: `'barf_stars'`  
 This indicates the event to custom listen to on the window that causes the stars to barf if the controller is set to `action:callback`
-
-## Examples
-
-### Using `action: "callback"`
-
-Imagine you have a `Cart` button that goes to the checkout page, and you want to make it **barf** whenever the user adds a product to the cart.  
-Here is how you could do it:
-
-```html
-<a
-  href="/checkout/"
-  id="checkout-menu-button"
-  data-config='{ "action": "callback", "eventName": "barf_checkout", numUniqueParticles: 2 }'
->
-  Cart (0)
-</a>
-```
-
-```css
-.barfystars-particle::after {
-  content: "⭐️";
-  font-size: 30px;
-}
-.barfystars-particle--2::after {
-  content: "💸";
-  font-size: 20px;
-}
-```
-
-```js
-import BarfyStars from "https://cdn.skypack.dev/wtc-barfystars";
-
-const barfCheckout = new BarfyStars(
-  document.getElementById("checkout-menu-button")
-);
-// when your user adds a product to the cart
-// all you have to do is fire the custom event
-window.dispatchEvent(new Event("barf_checkout"));
-```
-
-### Using `action: false`, manually barfing
-
-Be default a hook is attached to the element that can be used at any time to make it **barf**, _even when you select an `action`_.
-
-```html
-<img
-  id="my-logo"
-  src="./my-logo.jpg"
-  alt="iBarf logo"
-  data-config='{ "action": false, "numUniqueParticles": 1 }'
-/>
-```
-
-```css
-.barfystars-particle::after {
-  content: "🍎";
-  font-size: 20px;
-}
-```
-
-```js
-import BarfyStars from "https://cdn.skypack.dev/wtc-barfystars";
-
-const barfLogo = new BarfyStars(document.getElementById("my-logo"));
-
-// call hook any time
-barfLogo.barfNow();
-```
