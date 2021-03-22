@@ -90,3 +90,42 @@ Whether the element should respond to resize events. This should happen when the
 
 **eventName** | String | default: `'barf_stars'`  
 This indicates the event to custom listen to on the window that causes the stars to barf if the controller is set to `action:callback`
+
+## Examples
+
+### Using `action: "callback"`
+
+Imagine you have a `Cart` button that goes to the checkout page, and you want to make it **barf** whenever the user adds a product to the cart.  
+Here is how you could do it:
+
+```html
+<a
+  href="/checkout/"
+  id="checkout-menu-button"
+  data-config='{ "action": "callback", "eventName": "barf_checkout", numUniqueParticles: 2 }'
+>
+  Cart (0)
+</a>
+```
+
+```css
+.barfystars-particle::after {
+  content: "⭐️";
+  font-size: 30px;
+}
+.barfystars-particle--2::after {
+  content: "💸";
+  font-size: 20px;
+}
+```
+
+```js
+import BarfyStars from "https://cdn.skypack.dev/wtc-barfystars";
+
+const barfCheckout = new BarfyStars(
+  document.getElementById("checkout-menu-button")
+);
+// when your user adds a product to the cart
+// all you have to do is fire the custom event
+window.dispatchEvent(new Event("barf_checkout"));
+```
