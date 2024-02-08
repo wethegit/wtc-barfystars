@@ -56,7 +56,9 @@ Customize it as you want:
 
 ## Options
 
-Properties can be provided to the controller through the `data-config` attribute. This attribute must be **JSON** formatted and properies can be as follows:
+Properties can be provided to the controller through the `data-config` attribute on the HTML element, this attribute must be **JSON** formatted, alternatively you can pass an object to the class instance as a second parameter.
+
+Properies can be as follows:
 
 **action** | String || Boolean | default: `'hover'`  
 The action that triggers the barfy stars.  
