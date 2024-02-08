@@ -27,7 +27,7 @@
     "wtc-vector": "^0.1.11"
   },
   "devDependencies": {
-    "microbundle": "^0.12.0"
+    "microbundle": "^0.15.1"
   },
   "repository": {
     "type": "git",
