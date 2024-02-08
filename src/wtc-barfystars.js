@@ -153,11 +153,46 @@ class Particle {
   }
 }
 
+/**
+ * BarfyStars
+ * Turn any element into a particle system fountain.
+ * 
+ * @param {DOMNode} element
+ * @param {object} options
+ * @param {string | boolean} options.action - 'hover', 'click', 'callback' or false. Default is 'hover'
+ * @param {number} options.momentum - The initial momentum for the particles.
+ * @param {number} options.gravity - The gravity to apply to the particles.
+ * @param {number} options.friction - The friction to apply to the particles' momentum.
+ * @param {number} options.numParticles - The number of particles to spawn.
+ * @param {number} options.numUniqueParticles - Number of unique particles to use. 
+ * @param {number} options.scaleInitial - The initial scale of the particles
+ * @param {number} options.scaleFactor - A multiplier used to reduce the scale of the particles over time.
+ * @param {number} options.removeAt - The point, in scale, at which the particles need to be removed.
+ * @param {string} options.additionalClasses - Additional classes to be provided to the containing element.
+ * @param {boolean} options.respondToResize - Whether the element should respond to resize events. This should happen when the positioning of the anchor also changes in response to resize
+ * @param {string} options.eventName - This indicates the event to custom listen to on the window that causes the stars to barf if the controller is set to action:callback
+ */
 class BarfyStars {
-  constructor(element) {
+  constructor(element, options) {
     this.element = element;
 
     try {
+      if (options && typeof options === 'object') {
+        this.action = options.action;
+        this.momentum = options.momentum;
+        this.gravity = options.gravity;
+        this.friction = options.friction;
+        this.numParticles = options.numParticles;
+        this.numUniqueParticles = options.numUniqueParticles;
+        this.scaleInitial = options.scaleInitial;
+        this.scaleFactor = options.scaleFactor;
+        this.removeAt = options.removeAt;
+        this.additionalClasses = options.additionalClasses;
+        this.respondToResize = options.respondToResize != "false";
+        this.eventName = options.eventName;
+      }
+
+      // the config set on the element overwrites the options passed to the class
       if (element.dataset.config) {
         let config = JSON.parse(element.dataset.config);
 
