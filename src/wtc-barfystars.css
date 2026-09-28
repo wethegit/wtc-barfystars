@@ -1,19 +1,19 @@
-.barfystars-particle {
-  display: block;
-  height: 1px;
-  left: 50%;
-  position: absolute;
-  pointer-events: none;
-  top: 50%;
-  width: 1px;
-  z-index: 3;
+:where(.barfystars-particle) {
+    display: block;
+    height: 1px;
+    left: 50%;
+    position: absolute;
+    pointer-events: none;
+    top: 50%;
+    width: 1px;
+    z-index: 3;
 }
 
-.barfystars-particle::after {
-  content: "";
-  background-size: contain;
-  background-repeat: no-repeat;
-  display: block;
-  position: absolute;
-  transform: translate(-50%, -50%);
+:where(.barfystars-particle)::after {
+    content: "";
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: block;
+    position: absolute;
+    transform: translate(-50%, -50%);
 }
