@@ -5,7 +5,9 @@ Turn any element into a particle system fountain.
 
 ## Usage
 
-### HTML
+```sh
+npm i wtc-barfystars
+```
 
 ```html
 <button id="unicorns" data-config='{ "numUniqueParticles": 3 }'>
@@ -13,26 +15,11 @@ Turn any element into a particle system fountain.
 </button>
 ```
 
-### CSS
-
-Add the default css:
-
-```html
-<link
-  href="https://cdn.skypack.dev/wtc-barfystars/dist/wtc-barfystars.css"
-  rel="stylesheet"
-/>
-```
-
-### Javascript
-
-```js
-import BarfyStars from "https://cdn.skypack.dev/wtc-barfystars";
+```jsx
+import "wtc-barfystars/style.css";
+import BarfyStars from "wtc-barfystars";
 
 const barfUnicorns = new BarfyStars(document.getElementById("unicorns"));
-
-// you can also trigger it manually
-barfUnicorns.barf();
 ```
 
 Customize it as you want:
