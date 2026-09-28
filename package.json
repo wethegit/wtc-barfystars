@@ -8,8 +8,13 @@
   "unpkg": "dist/wtc-barfystars.umd.js",
   "module": "dist/wtc-barfystars.module.js",
   "exports": {
-    ".": "./dist/wtc-barfystars.modern.js"
+    ".": "./dist/wtc-barfystars.modern.js",
+    "./wtc-barfystars.css": "./dist/wtc-barfystars.css",
+    "./style.css": "./dist/wtc-barfystars.css"
   },
+  "sideEffects": [
+    "**/*.css"
+  ],
   "style": "dist/wtc-barfystars.css",
   "css": "dist/wtc-barfystars.css",
   "files": [
