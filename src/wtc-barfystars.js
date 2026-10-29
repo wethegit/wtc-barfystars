@@ -7,7 +7,9 @@ const ACTIONS = {
   CALLBACK: 2,
 };
 
-let fpsMeasure = getFPSMeasure();
+let fpsMeasure;
+let activeEmitters = 0;
+let fpsRestartFrame = null;
 
 /**
  * The Particle class is responsible for undertaking the calculations based on properties
@@ -30,6 +32,18 @@ class Particle {
     this.emitter = emitter;
     this.element = document.createElement("span");
     this.element.className = this.emitter.particleClasses;
+    if (this.emitter.particleContainer !== this.emitter.element) {
+      Object.assign(this.element.style, {
+        display: "block",
+        position: "absolute",
+        width: "1px",
+        height: "1px",
+        left: "50%",
+        top: "50%",
+        pointerEvents: "none",
+        zIndex: "3",
+      });
+    }
 
     let randomFactorX = Math.random();
     this.momentum = new vector(
@@ -171,10 +185,12 @@ class Particle {
  * @param {string} options.additionalClasses - Additional classes to be provided to the containing element.
  * @param {boolean} options.respondToResize - Whether the element should respond to resize events. This should happen when the positioning of the anchor also changes in response to resize
  * @param {string} options.eventName - This indicates the event to custom listen to on the window that causes the stars to barf if the controller is set to action:callback
+ * @param {HTMLElement} options.particleContainer - Mount particles here without wrapping or restyling the target.
  */
 class BarfyStars {
   constructor(element, options) {
     this.element = element;
+    this.particleContainer = options?.particleContainer || element;
 
     try {
       if (options && typeof options === 'object') {
@@ -188,7 +204,7 @@ class BarfyStars {
         this.scaleFactor = options.scaleFactor;
         this.removeAt = options.removeAt;
         this.additionalClasses = options.additionalClasses;
-        this.respondToResize = options.respondToResize != "false";
+        this.respondToResize = options.respondToResize !== false && options.respondToResize !== "false";
         this.eventName = options.eventName;
       }
 
@@ -206,7 +222,7 @@ class BarfyStars {
         this.scaleFactor = config.scaleFactor;
         this.removeAt = config.removeAt;
         this.additionalClasses = config.additionalClasses;
-        this.respondToResize = config.respondToResize != "false";
+        this.respondToResize = config.respondToResize !== false && config.respondToResize !== "false";
         this.eventName = config.eventName;
       }
 
@@ -216,42 +232,92 @@ class BarfyStars {
       console.log(error);
     }
 
-    if (this.respondToResize) {
-      window.addEventListener("resize", () => {
+    if (this.respondToResize && this.particleContainer === this.element) {
+      this.onResize = () => {
         clearTimeout(this.cssTimeout);
         this.ammendCSS();
-      });
+      };
+      window.addEventListener("resize", this.onResize);
     }
 
     if (this.configured) {
-      this.originalStyle = getComputedStyle(this.element);
-      this.element.parentElement.insertBefore(this.wrapper, this.element);
-      this.wrapper.appendChild(this.element);
-      this.ammendCSS(false);
+      if (this.particleContainer === this.element) {
+        this.originalInlineStyle = this.element.getAttribute("style");
+        this.originalStyle = getComputedStyle(this.element);
+        this.element.parentElement.insertBefore(this.wrapper, this.element);
+        this.wrapper.appendChild(this.element);
+        this.ammendCSS(false);
+      }
 
-      const onBarf = this.barf.bind(this);
+      activeEmitters++;
+      this.measuringFPS = true;
+      if (!fpsMeasure) {
+        fpsMeasure = getFPSMeasure();
+      } else if (!fpsMeasure.running && fpsRestartFrame === null) {
+        // Let the stopped monitor's pending frame drain before restarting it.
+        fpsRestartFrame = requestAnimationFrame(() => {
+          fpsRestartFrame = null;
+          if (activeEmitters > 0) fpsMeasure.start();
+        });
+      }
+
+      this.onBarf = this.barf.bind(this);
 
       if (this.action !== false) {
         switch (this.action) {
           case ACTIONS.CLICK:
-            this.element.addEventListener("click", onBarf);
+            this.eventTarget = this.element;
+            this.eventType = "click";
             break;
 
           case ACTIONS.CALLBACK:
-            window.addEventListener(this.eventName, onBarf);
+            this.eventTarget = window;
+            this.eventType = this.eventName;
             break;
 
           // default is `hover`
           default:
-            this.element.addEventListener("pointerenter", onBarf);
+            this.eventTarget = this.element;
+            this.eventType = "pointerenter";
             break;
         }
+        this.eventTarget.addEventListener(this.eventType, this.onBarf);
       }
     }
   }
 
   barf() {
     this.addParticles();
+  }
+
+  destroy() {
+    this.working = false;
+    this.running = false;
+    cancelAnimationFrame(this.animationFrame);
+    if (this.measuringFPS) {
+      this.measuringFPS = false;
+      activeEmitters--;
+      if (activeEmitters === 0) {
+        fpsMeasure.stop();
+        cancelAnimationFrame(fpsRestartFrame);
+        fpsRestartFrame = null;
+      }
+    }
+    clearTimeout(this.cssTimeout);
+    if (this.onResize) window.removeEventListener("resize", this.onResize);
+    this.eventTarget?.removeEventListener(this.eventType, this.onBarf);
+    this.particles.forEach((particle) => particle.element.remove());
+    this.particles.length = 0;
+    if (this._wrapper) {
+      if (this.element.parentNode === this._wrapper) {
+        this._wrapper.replaceWith(this.element);
+      } else {
+        this._wrapper.remove();
+      }
+      if (this.originalInlineStyle === null) this.element.removeAttribute("style");
+      else this.element.setAttribute("style", this.originalInlineStyle);
+      this._wrapper = null;
+    }
   }
 
   ammendCSS(hasTimeout = true) {
@@ -291,7 +357,7 @@ class BarfyStars {
       particle.run();
     });
 
-    if (this.running) requestAnimationFrame(this.run.bind(this));
+    if (this.running) this.animationFrame = requestAnimationFrame(this.run.bind(this));
   }
 
   addParticles() {
@@ -308,7 +374,7 @@ class BarfyStars {
       let particle = new Particle(this);
       if (particle.element) {
         this.particles.push(particle);
-        this.element.appendChild(particle.element);
+        this.particleContainer.appendChild(particle.element);
       }
     }
   }
@@ -324,7 +390,7 @@ class BarfyStars {
         this.running = false;
       }
       try {
-        this.element.removeChild(particle.element);
+        this.particleContainer.removeChild(particle.element);
       } catch (error) {}
     }, 0);
   }

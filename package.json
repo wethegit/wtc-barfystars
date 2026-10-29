@@ -7,8 +7,28 @@
   "umd:main": "dist/wtc-barfystars.umd.js",
   "unpkg": "dist/wtc-barfystars.umd.js",
   "module": "dist/wtc-barfystars.module.js",
+  "types": "dist/wtc-barfystars.d.ts",
   "exports": {
-    ".": "./dist/wtc-barfystars.modern.js",
+    ".": {
+      "import": {
+        "types": "./dist/wtc-barfystars.d.mts",
+        "default": "./dist/wtc-barfystars.modern.mjs"
+      },
+      "require": {
+        "types": "./dist/wtc-barfystars.d.ts",
+        "default": "./dist/wtc-barfystars.js"
+      }
+    },
+    "./react": {
+      "import": {
+        "types": "./dist/react/index.d.mts",
+        "default": "./dist/react/index.mjs"
+      },
+      "require": {
+        "types": "./dist/react/index.d.ts",
+        "default": "./dist/react/index.js"
+      }
+    },
     "./wtc-barfystars.css": "./dist/wtc-barfystars.css",
     "./style.css": "./dist/wtc-barfystars.css"
   },
@@ -23,16 +43,25 @@
   "scripts": {
     "copy-css": "cp src/wtc-barfystars.css dist/wtc-barfystars.css",
     "clean": "rm -rf ./dist",
-    "build": "npm run clean; microbundle; npm run copy-css",
-    "dev": "npm run clean; microbundle watch; npm run copy-css",
+    "build": "npm run clean && rollup -c && npm run copy-css && npm run copy-types",
+    "copy-types": "cp src/wtc-barfystars.d.ts dist/wtc-barfystars.d.ts && cp src/wtc-barfystars.d.ts dist/wtc-barfystars.d.mts && cp src/react/index.d.ts dist/react/index.d.ts && cp src/react/index.d.ts dist/react/index.d.mts",
+    "dev": "npm run build && rollup -c -w",
     "prepare": "npm run build"
+  },
+  "engines": {
+    "node": ">=26.13.0"
+  },
+  "peerDependencies": {
+    "react": ">=19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
   },
   "dependencies": {
     "wtc-measure-fps": "^0.0.2",
     "wtc-vector": "^0.1.11"
-  },
-  "devDependencies": {
-    "microbundle": "^0.15.1"
   },
   "repository": {
     "type": "git",
@@ -44,5 +73,13 @@
   ],
   "homepage": "https://github.com/wethegit/wtc-barfystars#readme",
   "author": "Liam Egan <liam@wethecollective.com> (http://wethecollective.com)",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^29.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@types/react": "^19.3.0",
+    "react": "^19.3.1",
+    "rollup": "^4.66.0",
+    "typescript": "^7.0.2"
+  }
 }
