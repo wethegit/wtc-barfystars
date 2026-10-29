@@ -89,6 +89,11 @@ the target. For example:
 }
 ```
 
+The stylesheet gives `.barfystars-target` a zero-specificity `position: relative`
+fallback and positions `.barfystars-layer` over it. Your classes can override these
+defaults, including fixed or absolute target positioning. The component adds no
+inline styles and passes your `style` prop through unchanged.
+
 For custom markup or imperative triggers, attach both refs from the hook:
 
 ```tsx
@@ -100,12 +105,12 @@ function CustomCelebration() {
   });
 
   return (
-    <div style={{ position: "relative" }}>
+    <div className="barfystars-target">
       <button ref={ref} onClick={barf}>Celebrate</button>
       <span
         ref={containerRef}
         aria-hidden="true"
-        style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+        className="barfystars-layer"
       />
     </div>
   );

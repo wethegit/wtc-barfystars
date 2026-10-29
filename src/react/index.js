@@ -43,7 +43,7 @@ export function useBarfyStars(options = {}, enabled = true) {
 }
 
 export const BarfyStars = forwardRef(function BarfyStars(
-  { as: Component = "div", options, enabled = true, children, style, ...props },
+  { as: Component = "div", options, enabled = true, children, className, ...props },
   forwardedRef
 ) {
   const { ref, containerRef } = useBarfyStars(options, enabled);
@@ -64,17 +64,13 @@ export const BarfyStars = forwardRef(function BarfyStars(
     {
       ...props,
       ref: targetRef,
-      style: {
-        ...style,
-        position: !style?.position || style.position === "static" ? "relative" : style.position,
-      },
+      className: ["barfystars-target", className].filter(Boolean).join(" "),
     },
     children,
     createElement("span", {
       ref: containerRef,
       "aria-hidden": true,
-      className: ["barfystars", options?.additionalClasses].filter(Boolean).join(" "),
-      style: { position: "absolute", inset: 0, pointerEvents: "none" },
+      className: ["barfystars barfystars-layer", options?.additionalClasses].filter(Boolean).join(" "),
     })
   );
 });
