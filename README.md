@@ -41,6 +41,99 @@ Customize it as you want:
 }
 ```
 
+## React (19+)
+
+React is an optional peer dependency. Vanilla users do not need to install it.
+React components and hooks are available separately from `wtc-barfystars/react`;
+TypeScript declarations are included for both entry points.
+
+```tsx
+import { useRef, useState } from "react";
+import { BarfyStars } from "wtc-barfystars/react";
+import "wtc-barfystars/style.css";
+
+function Celebration() {
+  const [enabled, setEnabled] = useState(true);
+  const button = useRef<HTMLButtonElement>(null);
+
+  return (
+    <>
+      <label>
+        <input
+          type="checkbox"
+          checked={enabled}
+          onChange={(event) => setEnabled(event.currentTarget.checked)}
+        />
+        Enable particles
+      </label>
+      <BarfyStars
+        as="button"
+        type="button"
+        ref={button}
+        className="celebration"
+        options={{ action: "click", numParticles: 30 }}
+        enabled={enabled}
+      >
+        Celebrate
+      </BarfyStars>
+    </>
+  );
+}
+```
+
+`as` defaults to `"div"` and infers the HTML props, event types and ref type.
+Choose an HTML element that can contain children (not a void element such as
+`input` or `img`). Use normal props, `className`, `style` and children to customize
+the target. For example:
+
+```css
+.celebration .barfystars-particle::after {
+  content: "⭐";
+  font-size: 24px;
+}
+```
+
+The component renders a single target with an absolutely positioned, hidden-from-
+assistive-technology particle layer inside it. It supplies the required positioning
+and pointer-event styles, without copying styles or reparenting the target.
+The target defaults to `position: relative`; explicit non-static positioning is
+preserved. Particles may be clipped by `overflow: hidden` on the target or its
+ancestors. `additionalClasses` applies to the particle layer.
+
+Changes to `options` values are applied automatically (an inline options object
+does not recreate the emitter on every render). Setting `enabled={false}` removes
+the emitter and its particles; enabling it again recreates it. Unmounting cleans
+up listeners, particles and the animation. React Strict Mode and server rendering
+are supported; emitters are only created in client effects.
+
+For custom markup or imperative triggers, attach both refs from the hook:
+
+```tsx
+import { useBarfyStars } from "wtc-barfystars/react";
+
+function CustomCelebration() {
+  const { ref, containerRef, barf } = useBarfyStars<HTMLButtonElement>({
+    action: false,
+  });
+
+  return (
+    <div style={{ position: "relative" }}>
+      <button ref={ref} onClick={barf}>Celebrate</button>
+      <span
+        ref={containerRef}
+        aria-hidden="true"
+        style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+      />
+    </div>
+  );
+}
+```
+
+The hook leaves placement and positioning of the particle layer to you. Its second
+argument is the same enabled flag, defaulting to `true`. `barf` is stable and safely
+does nothing while disabled or before mounting. Keep React-managed children outside
+the particle layer.
+
 ## Options
 
 Properties can be provided to the controller through the `data-config` attribute on the HTML element, this attribute must be **JSON** formatted, alternatively you can pass an object to the class instance as a second parameter.
@@ -89,3 +182,23 @@ Whether the element should respond to resize events. This should happen when the
 
 **eventName** | String | default: `'barf_stars'`  
 This indicates the event to custom listen to on the window that causes the stars to barf if the controller is set to `action:callback`
+
+**particleContainer** | HTMLElement | default: the target element
+
+Provide a separate particle container to avoid the legacy wrapper and style
+copying. Position the container yourself. The React component and hook manage this
+option internally.
+
+## Cleanup
+
+Call `barfUnicorns.destroy()` when a vanilla emitter is no longer needed. This
+removes its event listeners and particles, cancels its animation and pending style
+updates, and restores the original DOM placement and inline styles when using the
+legacy wrapper. Calling `destroy()` more than once is safe.
+
+## Development
+
+Use the latest stable Node.js release pinned in `.nvmrc` (Node 26.13.0 or newer),
+then run `npm install` and `npm run build`. `npm run dev` watches JavaScript source.
+The build produces the vanilla bundles, React entry points, CSS and declarations
+under `dist/`.
